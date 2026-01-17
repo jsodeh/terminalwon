@@ -1,0 +1,112 @@
+{
+  "name": "terminalwon-kiro",
+  "displayName": "TerminalWON for Kiro",
+  "description": "Terminal monitoring and collaboration for Kiro IDE",
+  "version": "1.0.0",
+  "publisher": "terminalwon",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "terminal",
+    "remote",
+    "monitoring",
+    "collaboration",
+    "kiro"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terminalwon.connect",
+        "title": "TerminalWON: Connect to Hub"
+      },
+      {
+        "command": "terminalwon.disconnect",
+        "title": "TerminalWON: Disconnect from Hub"
+      },
+      {
+        "command": "terminalwon.shareTerminal",
+        "title": "TerminalWON: Share Current Terminal"
+      },
+      {
+        "command": "terminalwon.createRemoteTerminal",
+        "title": "TerminalWON: Create Remote Terminal (Live Streaming)"
+      },
+      {
+        "command": "terminalwon.kiroIntegration",
+        "title": "TerminalWON: Enable Kiro Integration"
+      }
+    ],
+    "configuration": {
+      "title": "TerminalWON",
+      "properties": {
+        "terminalwon.hubUrl": {
+          "type": "string",
+          "default": "ws://localhost:3002",
+          "description": "TerminalWON Hub WebSocket URL"
+        },
+        "terminalwon.apiKey": {
+          "type": "string",
+          "default": "test-key-123",
+          "description": "Your TerminalWON API Key"
+        },
+        "terminalwon.kiroIntegration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable deep Kiro IDE integration"
+        },
+        "terminalwon.shareKiroTerminals": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically share Kiro terminals"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "terminalwon",
+          "title": "TerminalWON",
+          "icon": "$(terminal)"
+        }
+      ]
+    },
+    "views": {
+      "terminalwon": [
+        {
+          "id": "terminalwon.terminals",
+          "name": "Shared Terminals",
+          "when": "terminalwon.connected"
+        },
+        {
+          "id": "terminalwon.kiroTools",
+          "name": "Kiro Tools",
+          "when": "terminalwon.connected"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "@types/ws": "^8.5.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.14.0",
+    "node-pty": "^1.0.0"
+  }
+}

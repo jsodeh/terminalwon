@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON Team Workspace</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "primary-dark": "#0f4bc4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2233",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 10px rgba(0, 0, 0, 0.03)',
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.04)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hide for horizontal scroll areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 antialiased overflow-x-hidden">
+<!-- Mobile Wrapper -->
+<div class="relative min-h-screen w-full mx-auto max-w-md bg-background-light dark:bg-background-dark shadow-2xl overflow-hidden flex flex-col pb-20">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+<button class="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 class="text-sm font-bold tracking-tight text-gray-900 dark:text-white uppercase">TerminalWON</h2>
+</div>
+<button class="p-2 -mr-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-background-dark"></span>
+</button>
+</header>
+<!-- Main Content Scrollable Area -->
+<main class="flex-1 overflow-y-auto">
+<!-- Workspace Header Section -->
+<section class="bg-white dark:bg-surface-dark px-5 pt-6 pb-6 rounded-b-[2rem] shadow-sm mb-6">
+<div class="flex items-start justify-between mb-2">
+<h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">Engineering Alpha</h1>
+<button class="text-gray-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4 font-normal">
+                    Core infrastructure monitoring and unified remote terminal hub for the backend team.
+                </p>
+<!-- Chips -->
+<div class="flex flex-wrap gap-2 mb-6">
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full border border-gray-100 dark:border-gray-700">
+<span class="material-symbols-outlined text-gray-500 text-[16px]">group</span>
+<span class="text-xs font-semibold text-gray-700 dark:text-gray-300">12 Members</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-100 dark:border-blue-900/30">
+<span class="material-symbols-outlined text-primary text-[16px] filled">verified_user</span>
+<span class="text-xs font-semibold text-primary">Admin</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-full border border-amber-100 dark:border-amber-900/30">
+<span class="material-symbols-outlined text-amber-500 text-[16px] filled">diamond</span>
+<span class="text-xs font-semibold text-amber-600 dark:text-amber-400">Premium</span>
+</div>
+</div>
+<!-- Invite Button -->
+<button class="w-full flex items-center justify-center gap-2 h-12 bg-primary hover:bg-primary-dark active:scale-[0.98] transition-all rounded-xl shadow-lg shadow-blue-500/20 text-white font-semibold text-sm">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                    Invite Members
+                </button>
+</section>
+<!-- Shared Terminals Grid -->
+<section class="px-5 mb-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Active Terminals</h3>
+<button class="text-primary text-xs font-semibold flex items-center gap-1">
+                        View All <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Terminal Card 1 (Active) -->
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl shadow-card border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[18px]">terminal</span>
+</div>
+<div>
+<div class="font-mono text-sm font-semibold text-gray-800 dark:text-gray-200">prod-api-01</div>
+<div class="text-[10px] text-green-600 font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Running
+                                    </div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center hover:bg-primary hover:text-white transition-colors text-gray-400">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+<div class="bg-gray-900 rounded-lg p-2.5 mb-4 font-mono text-[10px] text-gray-400 leading-tight">
+<span class="text-green-400">$</span> tail -f /var/log/nginx/access.log<br/>
+<span class="text-gray-500">192.168.1.1 - - [12/Oct/2023:10:45:02] "GET /api/v1/users...</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<img alt="User" class="w-7 h-7 rounded-full border-2 border-white dark:border-surface-dark object-cover" data-alt="Female developer avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4uYWJh7-p3WTB7PZxsepBi65LcZoIo8BABopoP3MCE9vsj12mUd49M_QMDrlsUIinxim9UwkB-PtCfEmPOuvaxvqUqcx_UtbDhcVY8F6Isx93jgcGeIAZT8hJutQbTkoK5IND1QmzoePqwiKAQuS20SWOdNDKBnaECHfg-W6ytIqcyxGEmLHMDSu8jTT3iUyre3_h6444c996ZODtSWEpGMTau0g7upTT0vifx8ym3OB2bS8nM8LmRrJr5WNhnp5RM6jd7U0vBF4"/>
+<img alt="User" class="w-7 h-7 rounded-full border-2 border-white dark:border-surface-dark object-cover" data-alt="Male developer avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt_-ynUH2ML2g8A74OJ-naombJXEJ97VCa5etOhcfxnRYSBiQ120qbh5REEcsTZoj42ei3wisCZWVpGtYQjPE4C_tUZCzBPkv3AlpwCWrs3RdfHzmO8bp-6N0TisENILkcwvlJnAgu0jBappMVh_R_2Nbnapu76A-WmiiB7XheErAdT02TXicqYTmPniomAu74nJRmuNcpiVKnuFUtgeRnWDDqQaFcT_i6JVBA8B6CweqlVZGXzBbj1ZQR7a3babx7Vh97ZPj6NTk"/>
+<div class="w-7 h-7 rounded-full border-2 border-white dark:border-surface-dark bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-500">+1</div>
+</div>
+<button class="bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                                Join Session
+                            </button>
+</div>
+</div>
+<!-- Terminal Card 2 (Idle) -->
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl shadow-soft border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-gray-300 dark:bg-gray-600"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-[18px]">dns</span>
+</div>
+<div>
+<div class="font-mono text-sm font-semibold text-gray-800 dark:text-gray-200">db-shard-04</div>
+<div class="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span> Idle
+                                    </div>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center hover:bg-primary hover:text-white transition-colors text-gray-400">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+<div class="bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-lg p-2.5 mb-4 font-mono text-[10px] text-gray-400 leading-tight">
+<span class="text-gray-400">$</span> last login: Tue Oct 12 09:23:01<br/>
+<span class="text-gray-500 opacity-50">System ready...</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="text-xs text-gray-400 italic pl-1">No active users</div>
+<button class="text-gray-500 hover:text-primary px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
+                                Connect <span class="material-symbols-outlined text-[14px]">login</span>
+</button>
+</div>
+</div>
+<!-- Terminal Card 3 (Alert) -->
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl shadow-soft border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-red-500 text-[18px]">warning</span>
+</div>
+<div>
+<div class="font-mono text-sm font-semibold text-gray-800 dark:text-gray-200">payment-gw-02</div>
+<div class="text-[10px] text-red-500 font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span> Error
+                                    </div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-2">
+<img alt="User" class="w-7 h-7 rounded-full border-2 border-white dark:border-surface-dark object-cover" data-alt="Developer fixing bug avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFNargKgUwJ76lUK7-Ll0xH2y4KABs93ClqByDVb5RQ98e_MiPK2YSLaGYxjE-KWqBHMjgtNg9qkGkv3jYBe-iUKLqAacz9qoXXFJn45LkfIEFeqcpuGi43rXDGdZL06IZrOL2_eTmJZqNTt9Uqiu4ROIZ6b__XYaIpVWoO5yiTYe-NXUTNu-ogaY42jC_hooi3httnd8xwtOPakqRnxvGo8jwd5eEnzX4h4rxtzEibKkOIf9Omn0RCRtFb2USdbdyH_YhGY5y-Cw"/>
+</div>
+<button class="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">
+                                Troubleshoot
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity & Members Split Section -->
+<section class="bg-white dark:bg-surface-dark rounded-t-[2rem] pt-6 pb-20 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+<!-- Recent Activity Feed -->
+<div class="px-5 mb-8">
+<h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Live Feed</h3>
+<div class="space-y-4 relative">
+<!-- Connecting Line -->
+<div class="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gray-100 dark:bg-gray-800"></div>
+<!-- Item 1 -->
+<div class="relative flex gap-3">
+<div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 border-2 border-white dark:border-surface-dark z-10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[12px] text-green-600">check</span>
+</div>
+<div class="flex flex-col">
+<p class="text-xs text-gray-800 dark:text-gray-200">
+<span class="font-semibold">Sarah Jenkins</span> deployed to <span class="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-gray-600 dark:text-gray-400">prod-api-01</span>
+</p>
+<span class="text-[10px] text-gray-400 mt-0.5">2 mins ago</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="relative flex gap-3">
+<div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 border-2 border-white dark:border-surface-dark z-10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[12px] text-primary">terminal</span>
+</div>
+<div class="flex flex-col">
+<p class="text-xs text-gray-800 dark:text-gray-200">
+<span class="font-semibold">Mike Chen</span> joined session <span class="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-gray-600 dark:text-gray-400">#882</span>
+</p>
+<span class="text-[10px] text-gray-400 mt-0.5">15 mins ago</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="relative flex gap-3">
+<div class="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 border-2 border-white dark:border-surface-dark z-10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[12px] text-amber-600">warning</span>
+</div>
+<div class="flex flex-col">
+<p class="text-xs text-gray-800 dark:text-gray-200">
+                                   High latency detected on <span class="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded text-gray-600 dark:text-gray-400">db-shard-04</span>
+</p>
+<span class="text-[10px] text-gray-400 mt-0.5">32 mins ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Online Members -->
+<div class="px-5">
+<h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Team Members</h3>
+<div class="flex flex-col gap-3">
+<!-- Member Item -->
+<div class="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Sarah Jenkins Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBCmtijznj2Dp1sikelMm5Xunc6aHPAlbnsPSYMZYSpmaxBkSXoGepPGU4GlV80GKVllQareiyKxh506AOgniJ-kvs-6q0qHD8eMTR5V4xORAMV20QB_PD7sKp1lnfNSHuELW7uVmIkde8gG53GnNFAtmd8RCXMbSO0BP_WtK9_pXkMWF9COvjKHe2njd_W47s3Gjf6aRpqHQxDKV2LdC9YXe8PAXnsxu73gkPuDrYvFOJFdeZGaUWvFjSUXuTnCkpmGpucSWVRoM"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></div>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-900 dark:text-white">Sarah Jenkins</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">DevOps Lead</p>
+</div>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+</button>
+</div>
+<!-- Member Item -->
+<div class="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Mike Chen Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcBTASEfuOF7uXjo1qn_Afe523hxxh_uij_5KdmrgqObyVKCUrXeOeTX3Qs5VXhLUB0-5JkSaTtvqH_KUqBttd3e-2OP_Sj9Pp7tk4uvez_bPorPszjIUHh-Op_9QVbZMlDPbP00IOe1M0fZNUTW4XjYSu3o8A3Tb2kVyYf61gxEIzAZmv57hpevi0Ul6EnPnYu1woNuCgnw7GWPAAX1LxVrelmNs8o97iUBc3xGxmwX1X0s97MEwGUq1nXyxxb9vUYugpo2_tLEE"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-surface-dark rounded-full"></div>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-900 dark:text-white">Mike Chen</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Backend Engineer</p>
+</div>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+</button>
+</div>
+<!-- Member Item -->
+<div class="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover grayscale opacity-70" data-alt="David Kim Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz5xu_ikCV-UTu9FgG64wUREg1NdioQmZWL-IvnbH3Zsps9JYKnwuKGfgqb0980962mXgBrtDhOdC7Zuz_RNhfCx_PN4PsOf1vQWyRbHXP2sBN3y5v-9xQNisqhMiNzP1ip_4Yy4AMAZw2-5pWfa4jtxyF-i3s-3PVHsPScmtKIEhNkV9b9RM5HLm5tgKSbbmeP21j4QDaSzf6raxgUTrj_oxRo6-r9n9TQidd2opVH15NpLfL5DyxgcS5DIvjjzelDom5bGaYvus"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-gray-300 border-2 border-white dark:border-surface-dark rounded-full"></div>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-900 dark:text-white opacity-70">David Kim</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400">Security Engineer</p>
+</div>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="absolute bottom-0 w-full bg-white/90 dark:bg-surface-dark/95 backdrop-blur-lg border-t border-gray-100 dark:border-gray-800 pb-safe pt-2">
+<div class="flex justify-around items-center h-16">
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">dashboard</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-primary transition-colors">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<span class="material-symbols-outlined text-primary transition-colors filled">terminal</span>
+<span class="text-[10px] font-medium text-primary transition-colors">Terminals</span>
+</a>
+<!-- Floating Action Button (Center) -->
+<div class="relative -top-6">
+<button class="w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-blue-500/30 flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">group</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-primary transition-colors">Team</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-16 group" href="#">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">settings</span>
+<span class="text-[10px] font-medium text-gray-400 group-hover:text-primary transition-colors">Settings</span>
+</a>
+</div>
+<!-- Safe area spacing for modern phones -->
+<div class="h-4 w-full"></div>
+</nav>
+</div>
+</body></html>

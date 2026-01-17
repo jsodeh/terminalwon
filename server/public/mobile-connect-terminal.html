@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Connect Terminal - TerminalWON</title>
+<meta name="theme-color" content="#f9f506">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9f506",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#23220f",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2c2b18",
+                        "text-main": "#181811",
+                        "text-light": "#f2f2f2",
+                        "muted": "#8c8b5f",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-text-light max-w-md mx-auto">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden shadow-2xl">
+<!-- Top Bar -->
+<header class="sticky top-0 z-40 bg-surface-light dark:bg-surface-dark border-b border-gray-100 dark:border-white/10 px-4 py-3 flex items-center justify-between">
+<button onclick="window.history.back()" class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold tracking-tight">Connect Terminal</h1>
+<div class="w-10"></div>
+</header>
+
+<!-- Content -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6">
+<!-- Hub Connection Status -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-white/5">
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-bold text-lg">Hub Connection</h3>
+<div id="hub-status" class="flex items-center gap-2">
+<div class="h-2.5 w-2.5 rounded-full bg-gray-400"></div>
+<span class="text-sm text-muted">Checking...</span>
+</div>
+</div>
+<p class="text-sm text-muted">Hub URL: <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono text-xs">ws://localhost:3002</code></p>
+</div>
+
+<!-- Method 1: IDE Extensions -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3 mb-3">
+<div class="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl text-black">extension</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">IDE Extensions</h3>
+<p class="text-xs text-muted">Recommended for developers</p>
+</div>
+</div>
+<p class="text-sm text-muted mb-4">Install TerminalWON extension in your IDE to automatically monitor and share terminals.</p>
+<div class="space-y-2">
+<button onclick="copyCommand('code --install-extension terminalwon-vscode-1.0.0.vsix')" class="w-full flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-2xl">💙</span>
+<div class="text-left">
+<p class="font-bold text-sm">VSCode / Cursor</p>
+<p class="text-xs text-muted">Install extension</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</button>
+<button onclick="copyCommand('kiro extension install terminalwon-kiro-1.0.0.vsix')" class="w-full flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<div class="flex items-center gap-3">
+<span class="text-2xl">🎯</span>
+<div class="text-left">
+<p class="font-bold text-sm">Kiro IDE</p>
+<p class="text-xs text-muted">Install extension</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-muted">chevron_right</span>
+</button>
+</div>
+</div>
+
+<!-- Method 2: CLI Tool -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3 mb-3">
+<div class="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl text-black">terminal</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">CLI Tool</h3>
+<p class="text-xs text-muted">For any terminal</p>
+</div>
+</div>
+<p class="text-sm text-muted mb-4">Use the TerminalWON CLI to connect any terminal session.</p>
+<div class="space-y-3">
+<div>
+<p class="text-xs font-bold mb-2">1. Install CLI</p>
+<div class="bg-[#1e1e1e] rounded-lg p-3 font-mono text-xs text-gray-300 flex items-center justify-between">
+<code>npm install -g terminalwon-cli</code>
+<button onclick="copyCommand('npm install -g terminalwon-cli')" class="text-primary hover:text-primary/80">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold mb-2">2. Connect Terminal</p>
+<div class="bg-[#1e1e1e] rounded-lg p-3 font-mono text-xs text-gray-300 flex items-center justify-between">
+<code>terminalwon connect</code>
+<button onclick="copyCommand('terminalwon connect')" class="text-primary hover:text-primary/80">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold mb-2">3. Monitor Terminal</p>
+<div class="bg-[#1e1e1e] rounded-lg p-3 font-mono text-xs text-gray-300 flex items-center justify-between">
+<code>terminalwon monitor</code>
+<button onclick="copyCommand('terminalwon monitor')" class="text-primary hover:text-primary/80">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Method 3: Web Dashboard -->
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-white/5">
+<div class="flex items-center gap-3 mb-3">
+<div class="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl text-black">web</span>
+</div>
+<div>
+<h3 class="font-bold text-lg">Web Dashboard</h3>
+<p class="text-xs text-muted">View from browser</p>
+</div>
+</div>
+<p class="text-sm text-muted mb-4">Access the web dashboard to view terminals from any device.</p>
+<button onclick="window.open('http://localhost:8080', '_blank')" class="w-full p-3 bg-primary text-black rounded-xl font-bold hover:brightness-95 transition-all">
+                Open Web Dashboard
+            </button>
+</div>
+
+<!-- Help Section -->
+<div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-100 dark:border-blue-900/30">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
+<div>
+<p class="font-bold text-sm text-blue-900 dark:text-blue-100 mb-1">Need Help?</p>
+<p class="text-xs text-blue-700 dark:text-blue-300">Make sure the TerminalWON Hub is running on port 3002. Check the README for detailed setup instructions.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+    let ws = null;
+
+    function checkHubConnection() {
+        try {
+            ws = new WebSocket('ws://localhost:3002');
+            
+            ws.onopen = () => {
+                updateHubStatus('connected', 'Connected');
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    payload: { tool: 'mobile-pwa-connect', platform: 'browser', apiKey: 'test-key-123' },
+                    timestamp: new Date(),
+                    messageId: `connect-${Date.now()}`
+                }));
+            };
+            
+            ws.onerror = () => {
+                updateHubStatus('error', 'Not Running');
+            };
+            
+            ws.onclose = () => {
+                if (ws) {
+                    updateHubStatus('disconnected', 'Disconnected');
+                }
+            };
+            
+        } catch (error) {
+            updateHubStatus('error', 'Error');
+        }
+    }
+
+    function updateHubStatus(status, text) {
+        const statusEl = document.getElementById('hub-status');
+        const colors = {
+            connected: 'bg-green-500',
+            disconnected: 'bg-gray-400',
+            error: 'bg-red-500'
+        };
+        
+        statusEl.innerHTML = `
+            <div class="h-2.5 w-2.5 rounded-full ${colors[status]} ${status === 'connected' ? 'animate-pulse' : ''}"></div>
+            <span class="text-sm ${status === 'connected' ? 'text-green-600 dark:text-green-400' : 'text-muted'}">${text}</span>
+        `;
+    }
+
+    function copyCommand(command) {
+        navigator.clipboard.writeText(command).then(() => {
+            // Show toast notification
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-black text-white px-4 py-2 rounded-full text-sm font-medium z-50';
+            toast.textContent = 'Copied to clipboard!';
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }).catch(err => {
+            alert('Failed to copy: ' + command);
+        });
+    }
+
+    // Check hub connection on load
+    window.onload = () => {
+        setTimeout(checkHubConnection, 500);
+    };
+</script>
+</body>
+</html>

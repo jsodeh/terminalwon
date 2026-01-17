@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON Terminal Detail View</title>
+<meta name="theme-color" content="#f9f506">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TerminalWON">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9f506",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#23220f",
+                        "terminal-bg": "#1e1e1e",
+                        "terminal-text": "#d4d4d4",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "Noto Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for terminal */
+        .terminal-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 3px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#181811] overflow-hidden h-screen w-full flex flex-col max-w-md mx-auto">
+<!-- Top Navigation Bar -->
+<header class="flex-none bg-white dark:bg-[#1a1a12] p-4 pb-2 border-b border-gray-100 dark:border-gray-800 z-20">
+<div class="flex items-center justify-between">
+<button onclick="goBack()" class="text-[#181811] dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 id="terminal-name" class="text-[#181811] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Loading...</h2>
+<div class="flex items-center gap-1.5">
+<span id="status-indicator" class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
+</span>
+<span id="terminal-status" class="text-xs font-medium text-gray-500 dark:text-gray-400">Connecting...</span>
+</div>
+</div>
+<button class="flex w-10 h-10 items-center justify-center rounded-full text-[#181811] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<!-- Chips/Context - Dynamic -->
+<div id="terminal-chips" class="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
+<!-- Will be populated dynamically -->
+</div>
+</header>
+
+<!-- Main Content Area: Split View -->
+<main class="flex-1 flex flex-col relative overflow-hidden bg-white dark:bg-[#1a1a12]">
+<!-- Terminal Section (Top 55%) -->
+<div class="flex-none h-[55%] flex flex-col p-4 pb-0 bg-background-light dark:bg-background-dark">
+<!-- Terminal Window -->
+<div class="flex-1 rounded-t-xl overflow-hidden bg-terminal-bg shadow-lg flex flex-col border border-gray-800 dark:border-gray-700 relative group">
+<!-- Terminal Header -->
+<div class="h-8 bg-[#2d2d2d] flex items-center justify-between px-3 border-b border-[#3e3e3e]">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+<div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+<div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+</div>
+<div class="text-[#888] text-xs font-mono">user@remote:~</div>
+<div class="flex gap-2">
+<button class="text-gray-400 hover:text-white transition-colors" title="Search">
+<span class="material-symbols-outlined text-[16px]">search</span>
+</button>
+<button class="text-gray-400 hover:text-white transition-colors" title="Copy All">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button onclick="clearTerminal()" class="text-gray-400 hover:text-white transition-colors" title="Clear">
+<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+</button>
+<button onclick="toggleAutoScroll()" class="text-gray-400 hover:text-white transition-colors" title="Auto-scroll">
+<span id="autoscroll-icon" class="material-symbols-outlined text-[16px]">arrow_downward</span>
+</button>
+</div>
+</div>
+<!-- Terminal Content -->
+<div id="terminal-output" class="flex-1 p-3 overflow-y-auto terminal-scroll font-mono text-xs sm:text-sm leading-relaxed text-terminal-text relative">
+<div class="absolute bottom-4 right-4 z-10">
+<button class="bg-[#3e3e3e]/80 backdrop-blur text-white p-1.5 rounded-full shadow-md hover:bg-[#4e4e4e] transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">arrow_downward</span>
+</button>
+</div>
+<!-- Loading state - will be replaced with real content -->
+<div class="flex flex-col items-center justify-center h-full text-center">
+<div class="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mb-4"></div>
+<div class="text-gray-400">Connecting to terminal...</div>
+</div>
+</div>
+</div>
+<!-- Resize Handle Simulation -->
+<div class="h-4 flex items-center justify-center cursor-ns-resize touch-none">
+<div class="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+</div>
+</div>
+
+<!-- Bottom Section: Command Input -->
+<div class="flex-1 bg-white dark:bg-[#1a1a12] rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex flex-col z-10">
+<!-- Simple Header -->
+<div class="px-4 pt-3 pb-2 border-b border-gray-100 dark:border-gray-800">
+<h3 class="text-sm font-bold text-[#181811] dark:text-white">Send Command</h3>
+</div>
+<!-- Input Area -->
+<div class="p-4 bg-white dark:bg-[#1a1a12] pb-safe">
+<!-- Quick Commands -->
+<div class="flex gap-2 overflow-x-auto pb-3 no-scrollbar mb-1">
+<button onclick="sendQuickCommand('ls -la')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 border border-transparent transition-all">
+                        ls -la
+                    </button>
+<button onclick="sendQuickCommand('pwd')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 border border-transparent transition-all">
+                        pwd
+                    </button>
+<button onclick="sendQuickCommand('git status')" class="whitespace-nowrap px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 border border-transparent transition-all">
+                        git status
+                    </button>
+<button onclick="sendRawInput('y\\n')" class="whitespace-nowrap px-3 py-1.5 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50 rounded-full text-xs font-medium text-green-700 dark:text-green-400 border border-transparent transition-all">
+                        Y (Yes)
+                    </button>
+<button onclick="sendRawInput('n\\n')" class="whitespace-nowrap px-3 py-1.5 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 rounded-full text-xs font-medium text-red-700 dark:text-red-400 border border-transparent transition-all">
+                        N (No)
+                    </button>
+<button onclick="sendInterrupt()" class="whitespace-nowrap px-3 py-1.5 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 rounded-full text-xs font-medium text-orange-700 dark:text-orange-400 border border-transparent transition-all">
+                        Ctrl+C
+                    </button>
+<button onclick="clearTerminal()" class="whitespace-nowrap px-3 py-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 rounded-full text-xs font-medium text-red-600 dark:text-red-400 border border-transparent transition-all">
+                        clear
+                    </button>
+</div>
+<!-- Input Box -->
+<div class="relative flex items-end gap-2">
+<div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-[1.5rem] focus-within:ring-2 focus-within:ring-primary/50 transition-all">
+<textarea class="w-full bg-transparent border-0 text-sm p-3.5 pl-4 text-[#181811] dark:text-white placeholder-gray-400 focus:ring-0 resize-none max-h-32" placeholder="Type a command or ask AI..." rows="1"></textarea>
+<button class="absolute right-2 bottom-1.5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+</div>
+<button class="h-11 w-11 shrink-0 rounded-full bg-primary text-[#181811] flex items-center justify-center shadow-lg hover:brightness-95 transition-all">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+
+<!-- Error toast will appear here dynamically when needed -->
+<div id="error-toast" class="absolute top-20 left-1/2 -translate-x-1/2 bg-red-500/90 text-white px-4 py-2 rounded-full shadow-lg backdrop-blur-sm z-30 items-center gap-2 animate-bounce hidden">
+<span class="material-symbols-outlined text-sm">error</span>
+<span id="error-message" class="text-xs font-bold"></span>
+</div>
+
+<script>
+    let ws = null;
+    let terminalId = null;
+    let terminalData = null;
+    let outputBuffer = [];
+    let isStreamingTerminal = false;
+    let isPTYTerminal = false;
+    let autoScroll = true;
+    let isSubscribed = false;
+    
+    function goBack() {
+        window.history.back();
+    }
+    
+    function getTerminalIdFromURL() {
+        const path = window.location.pathname;
+        const match = path.match(/\/terminal\/(.+)/);
+        return match ? match[1] : null;
+    }
+    
+    function connect() {
+        try {
+            terminalId = getTerminalIdFromURL();
+            console.log('Terminal ID from URL:', terminalId);
+            
+            ws = new WebSocket('ws://localhost:3002');
+            
+            ws.onopen = () => {
+                console.log('Terminal Detail: Connected to TerminalWON Hub');
+                
+                // Send authentication
+                send('auth', {
+                    tool: 'mobile-pwa-terminal',
+                    platform: 'browser',
+                    apiKey: 'test-key-123'
+                });
+                
+                // Request terminal list to get this terminal's data
+                setTimeout(() => requestTerminals(), 300);
+            };
+            
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                handleMessage(message);
+            };
+            
+            ws.onclose = () => {
+                console.log('Terminal Detail: Disconnected from hub');
+                isSubscribed = false;
+                setTimeout(connect, 5000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('Terminal Detail WebSocket error:', error);
+            };
+            
+        } catch (error) {
+            console.error('Terminal Detail connection failed:', error);
+            setTimeout(connect, 5000);
+        }
+    }
+    
+    function send(type, payload) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type,
+                payload,
+                timestamp: new Date(),
+                messageId: `terminal-detail-${Date.now()}`
+            }));
+        }
+    }
+    
+    function requestTerminals() {
+        send('terminals.list', { messageId: `list-${Date.now()}` });
+    }
+    
+    function subscribeToTerminal() {
+        if (!isSubscribed && terminalId) {
+            console.log('Subscribing to terminal:', terminalId);
+            send('terminal.subscribe', { terminalId: terminalId });
+        }
+    }
+    
+    function handleMessage(message) {
+        console.log('Terminal Detail received:', message.type, message);
+        
+        switch (message.type) {
+            case 'auth.success':
+                console.log('Authentication successful, PTY available:', message.payload.ptyAvailable);
+                break;
+                
+            case 'message':
+                if (message.payload && message.payload.terminals) {
+                    const terminals = message.payload.terminals;
+                    terminalData = terminals.find(t => t.id === terminalId);
+                    if (terminalData) {
+                        isPTYTerminal = terminalData.type === 'pty';
+                        isStreamingTerminal = terminalData.streaming === true || isPTYTerminal;
+                        updateTerminalInfo(terminalData);
+                        
+                        // Subscribe to PTY terminals for live output
+                        if (isPTYTerminal && !isSubscribed) {
+                            subscribeToTerminal();
+                        }
+                    } else {
+                        showTerminalNotFound();
+                    }
+                }
+                break;
+                
+            case 'terminal.subscribed':
+                console.log('Successfully subscribed to terminal:', message.payload.terminalId);
+                isSubscribed = true;
+                appendTerminalOutput('🔗 Connected to live terminal stream\n');
+                break;
+                
+            case 'terminal.subscribe.error':
+                console.error('Failed to subscribe:', message.payload.error);
+                appendTerminalOutput(`⚠️ Failed to subscribe: ${message.payload.error}\n`);
+                break;
+                
+            case 'terminal.output':
+                if (message.payload.terminalId === terminalId) {
+                    appendTerminalOutput(message.payload.content);
+                }
+                break;
+                
+            case 'terminal.closed':
+                if (message.payload.terminalId === terminalId) {
+                    appendTerminalOutput('\n🔚 Terminal closed\n');
+                    updateTerminalStatus('closed');
+                }
+                break;
+                
+            case 'terminal.register':
+            case 'terminal.new':
+                // New terminal registered, refresh list
+                setTimeout(() => requestTerminals(), 500);
+                break;
+        }
+    }
+    
+    function updateTerminalStatus(status) {
+        const statusEl = document.getElementById('terminal-status');
+        if (statusEl) {
+            statusEl.textContent = status;
+        }
+        
+        const statusIndicator = document.getElementById('status-indicator');
+        if (statusIndicator) {
+            const pingEl = statusIndicator.querySelector('.animate-ping');
+            const dotEl = statusIndicator.querySelector('.relative');
+            if (status === 'closed') {
+                pingEl.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75';
+                dotEl.className = 'relative inline-flex rounded-full h-2 w-2 bg-red-500';
+            }
+        }
+    }
+    
+    function updateTerminalInfo(terminal) {
+        terminalData = terminal;
+        isPTYTerminal = terminal.type === 'pty';
+        isStreamingTerminal = terminal.streaming === true || isPTYTerminal;
+        
+        // Update terminal name in header
+        const titleEl = document.getElementById('terminal-name');
+        if (titleEl) {
+            titleEl.textContent = terminal.name || 'Terminal';
+        }
+        
+        // Update status indicator color
+        const statusIndicator = document.getElementById('status-indicator');
+        if (statusIndicator) {
+            const pingEl = statusIndicator.querySelector('.animate-ping');
+            const dotEl = statusIndicator.querySelector('.relative');
+            if (terminal.status === 'active') {
+                pingEl.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75';
+                dotEl.className = 'relative inline-flex rounded-full h-2 w-2 bg-green-500';
+            } else {
+                pingEl.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75';
+                dotEl.className = 'relative inline-flex rounded-full h-2 w-2 bg-yellow-500';
+            }
+        }
+        
+        // Update status text with streaming indicator
+        const statusEl = document.getElementById('terminal-status');
+        if (statusEl) {
+            const streamingBadge = isPTYTerminal ? ' • 🔴 PTY LIVE' : (isStreamingTerminal ? ' • 🔴 LIVE' : '');
+            statusEl.textContent = `${terminal.status || 'Online'} • ${terminal.tool}${streamingBadge}`;
+        }
+        
+        // Update chips with real terminal info
+        const chipsEl = document.getElementById('terminal-chips');
+        if (chipsEl) {
+            const chips = [];
+            if (terminal.tool) {
+                chips.push(`<div class="flex h-7 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-[#f5f5f0] dark:bg-gray-800 pl-3 pr-3">
+                    <span class="material-symbols-outlined text-sm">terminal</span>
+                    <p class="text-[#181811] dark:text-gray-200 text-xs font-medium">${terminal.tool}</p>
+                </div>`);
+            }
+            if (terminal.cwd) {
+                const shortCwd = terminal.cwd.split('/').slice(-2).join('/');
+                chips.push(`<div class="flex h-7 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-[#f5f5f0] dark:bg-gray-800 pl-3 pr-3">
+                    <span class="material-symbols-outlined text-sm">folder</span>
+                    <p class="text-[#181811] dark:text-gray-200 text-xs font-medium">${shortCwd}</p>
+                </div>`);
+            }
+            if (isPTYTerminal) {
+                chips.push(`<div class="flex h-7 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-green-100 dark:bg-green-900/30 pl-3 pr-3">
+                    <span class="text-green-500 text-xs">●</span>
+                    <p class="text-green-600 dark:text-green-400 text-xs font-medium">PTY</p>
+                </div>`);
+            }
+            if (isStreamingTerminal) {
+                chips.push(`<div class="flex h-7 shrink-0 items-center justify-center gap-x-1.5 rounded-full bg-red-100 dark:bg-red-900/30 pl-3 pr-3">
+                    <span class="text-red-500 text-xs">🔴</span>
+                    <p class="text-red-600 dark:text-red-400 text-xs font-medium">LIVE</p>
+                </div>`);
+            }
+            chipsEl.innerHTML = chips.join('');
+        }
+        
+        // Update terminal output area
+        const outputEl = document.getElementById('terminal-output');
+        if (outputEl && !outputBuffer.length) {
+            if (isPTYTerminal) {
+                outputEl.innerHTML = `
+                    <div class="text-green-400 mb-2">🔴 [PTY TERMINAL] ${terminal.name}</div>
+                    <div class="mb-1"><span class="text-blue-400 font-bold">${terminal.cwd || '~'}</span> <span class="text-purple-400">➜</span></div>
+                    <div class="text-gray-500 text-xs mt-2">This is a full PTY terminal with real-time I/O</div>
+                    <div class="text-gray-500 text-xs">Shell: ${terminal.shell || 'default'} | PID: ${terminal.pid || 'N/A'}</div>
+                    <div class="flex items-center mt-4">
+                        <span class="text-blue-400 font-bold mr-2">${terminal.cwd || '~'}</span>
+                        <span class="text-purple-400 mr-2">➜</span>
+                        <span class="w-2 h-4 bg-green-400 animate-pulse block"></span>
+                    </div>
+                `;
+            } else if (isStreamingTerminal) {
+                outputEl.innerHTML = `
+                    <div class="text-green-400 mb-2">🔴 [LIVE STREAMING] Terminal: ${terminal.name}</div>
+                    <div class="mb-1"><span class="text-blue-400 font-bold">${terminal.cwd || '~'}</span> <span class="text-purple-400">➜</span> <span class="text-gray-300">Waiting for output...</span></div>
+                    <div class="text-gray-500 text-xs mt-2">This is a live streaming terminal with full I/O capture</div>
+                    <div class="text-gray-500 text-xs">You can send commands and see real-time output</div>
+                    <div class="flex items-center mt-4">
+                        <span class="text-blue-400 font-bold mr-2">${terminal.cwd || '~'}</span>
+                        <span class="text-purple-400 mr-2">➜</span>
+                        <span class="w-2 h-4 bg-green-400 animate-pulse block"></span>
+                    </div>
+                `;
+            } else {
+                outputEl.innerHTML = `
+                    <div class="text-yellow-400 mb-2">[MONITORING] Terminal: ${terminal.name}</div>
+                    <div class="mb-1"><span class="text-blue-400 font-bold">${terminal.cwd || '~'}</span> <span class="text-purple-400">➜</span> <span class="text-gray-300">Monitoring terminal metadata...</span></div>
+                    <div class="text-gray-500 text-xs mt-2">Terminal ID: ${terminal.id}</div>
+                    <div class="text-gray-500 text-xs">Tool: ${terminal.tool}</div>
+                    <div class="text-gray-500 text-xs">Status: ${terminal.status}</div>
+                    <div class="text-gray-500 text-xs">Last Activity: ${new Date(terminal.lastActivity).toLocaleString()}</div>
+                    <div class="text-orange-400 text-xs mt-4">⚠️ This terminal is not streaming output. Create a PTY terminal from the dashboard for live streaming.</div>
+                `;
+            }
+        }
+    }
+    
+    function appendTerminalOutput(content) {
+        if (!content) return;
+        
+        // Add to buffer
+        outputBuffer.push(content);
+        
+        // Keep last 500 lines for streaming terminals
+        const maxLines = isStreamingTerminal ? 500 : 100;
+        if (outputBuffer.length > maxLines) {
+            outputBuffer = outputBuffer.slice(-maxLines);
+        }
+        
+        const outputEl = document.getElementById('terminal-output');
+        if (outputEl) {
+            // Convert ANSI codes to HTML (basic support)
+            const formattedOutput = outputBuffer.map(line => {
+                const escaped = escapeHtml(line);
+                // Basic ANSI color support
+                return `<div class="text-gray-300 whitespace-pre-wrap">${escaped}</div>`;
+            }).join('');
+            
+            outputEl.innerHTML = formattedOutput;
+            
+            // Auto-scroll to bottom if enabled
+            if (autoScroll) {
+                outputEl.scrollTop = outputEl.scrollHeight;
+            }
+        }
+    }
+    
+    function showTerminalNotFound() {
+        const outputEl = document.getElementById('terminal-output');
+        if (outputEl) {
+            outputEl.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-center py-8">
+                    <div class="text-red-400 text-2xl mb-4">⚠️</div>
+                    <div class="text-gray-300 mb-2">Terminal Not Found</div>
+                    <div class="text-gray-500 text-sm">Terminal ID: ${terminalId}</div>
+                    <div class="text-gray-500 text-sm mt-4">This terminal may have been closed or disconnected.</div>
+                    <button onclick="window.history.back()" class="mt-4 px-4 py-2 bg-primary text-black rounded-full font-bold hover:brightness-95">
+                        Go Back
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Update header to show not found
+        const titleEl = document.getElementById('terminal-name');
+        if (titleEl) titleEl.textContent = 'Not Found';
+        
+        const statusEl = document.getElementById('terminal-status');
+        if (statusEl) statusEl.textContent = 'Disconnected';
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function clearTerminal() {
+        outputBuffer = [];
+        const outputEl = document.getElementById('terminal-output');
+        if (outputEl) {
+            if (isStreamingTerminal) {
+                outputEl.innerHTML = `
+                    <div class="text-green-400 mb-2">🔴 [LIVE STREAMING] Terminal cleared</div>
+                    <div class="flex items-center">
+                        <span class="text-blue-400 font-bold mr-2">${terminalData?.cwd || '~'}</span>
+                        <span class="text-purple-400 mr-2">➜</span>
+                        <span class="w-2 h-4 bg-green-400 animate-pulse block"></span>
+                    </div>
+                `;
+            } else {
+                outputEl.innerHTML = `<div class="text-gray-500">Terminal cleared</div>`;
+            }
+        }
+    }
+    
+    function toggleAutoScroll() {
+        autoScroll = !autoScroll;
+        const icon = document.getElementById('autoscroll-icon');
+        if (icon) {
+            icon.textContent = autoScroll ? 'arrow_downward' : 'pause';
+            icon.style.color = autoScroll ? '' : '#f9f506';
+        }
+        
+        // If enabling auto-scroll, scroll to bottom now
+        if (autoScroll) {
+            const outputEl = document.getElementById('terminal-output');
+            if (outputEl) {
+                outputEl.scrollTop = outputEl.scrollHeight;
+            }
+        }
+    }
+    
+    function sendCommand() {
+        const input = document.querySelector('textarea');
+        if (input && input.value.trim() && terminalId) {
+            const command = input.value.trim();
+            
+            if (isPTYTerminal || isStreamingTerminal) {
+                // For PTY/streaming terminals, send command to execute
+                send('terminal.execute', {
+                    terminalId: terminalId,
+                    command: command
+                });
+                
+                // Don't echo command - the PTY will echo it back
+                console.log('Sent command to PTY:', command);
+            } else {
+                // For non-streaming terminals, just show a message
+                appendTerminalOutput(`\n⚠️ Cannot execute commands on non-streaming terminals\n`);
+                appendTerminalOutput(`Create a PTY terminal from the dashboard for interactive control\n`);
+            }
+            
+            input.value = '';
+        }
+    }
+    
+    function sendQuickCommand(command) {
+        if (!terminalId) return;
+        
+        if (isPTYTerminal || isStreamingTerminal) {
+            send('terminal.execute', {
+                terminalId: terminalId,
+                command: command
+            });
+            console.log('Sent quick command to PTY:', command);
+        } else {
+            appendTerminalOutput(`\n⚠️ Cannot execute commands on non-streaming terminals\n`);
+        }
+    }
+    
+    function sendRawInput(input) {
+        // For sending raw input like Ctrl+C, Y/N responses, etc.
+        if (!terminalId || (!isPTYTerminal && !isStreamingTerminal)) return;
+        
+        send('terminal.input', {
+            terminalId: terminalId,
+            input: input
+        });
+    }
+    
+    function sendInterrupt() {
+        // Send Ctrl+C
+        sendRawInput('\x03');
+    }
+    
+    // Auto-connect on page load
+    window.onload = () => {
+        setTimeout(connect, 500);
+        
+        // Add enter key handler for command input
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+            textarea.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendCommand();
+                }
+            });
+        }
+        
+        // Add click handler for send button
+        const sendBtn = document.querySelector('button[class*="bg-primary"][class*="rounded-full"]');
+        if (sendBtn) {
+            sendBtn.addEventListener('click', sendCommand);
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6366F1", // Bright Indigo
+                        "primary-foreground": "#FFFFFF",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#0F172A", // Deep Charcoal
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1E293B", // Slate Gray
+                        "text-main": "#181811",
+                        "text-light": "#F1F5F9", // Off-white
+                        "text-secondary-dark": "#94A3B8", // Light Slate
+                        "border-dark": "#334155", // Dark Slate
+                        "muted": "#94A3B8",
+                        "success": "#34D399", // Bright Emerald
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+                    boxShadow: {
+                        'dark-card': '0 1px 3px rgba(0,0,0,0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }.no-scrollbar {
+            -ms-overflow-style: none;scrollbar-width: none;}
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.85);}
+        .terminal-gradient {
+            background: linear-gradient(to bottom, transparent 60%, #1e1e1e 100%);
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-text-light transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl pb-24 border-x border-gray-100 dark:border-border-dark">
+<header class="sticky top-0 z-40 glass-panel border-b border-gray-100 dark:border-border-dark px-4 py-3 flex items-center justify-between transition-all">
+<div class="flex items-center gap-2">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-text-light">TerminalWON</h1>
+</div>
+<div class="flex items-center gap-3">
+<button class="relative p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-gray-600 dark:text-text-light">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+<span class="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white dark:border-[#1E293B]"></span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-white dark:border-border-dark shadow-sm cursor-pointer">
+<img alt="User Avatar" class="h-full w-full object-cover" data-alt="Portrait of a smiling young man in a white t-shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFQm2FAaYTTdhFdD3RkPwA96_xsmpZrYN0VKyXjUqfi2exgeCPpSpJBqXEO87V4EwOHJyexlSeld-6PyNQ6GpCdXPKQ-2XroBe1I368k8MujCi5efPEAvaawNIT9q76PnPjz2D4SVt2iVGuOeZSh7H-ori-p42dCrhR4aQI5__Cm2_S9-xA45_MnVGykVGY2k4YSEmao2tD5uqdGXrEQlGxsSv1e7LfNb0L4JwyBLJq94K0WPI7sQbOxWZ_JWaYGq2ipOYNtJSecM"/>
+</div>
+</div>
+</header>
+<div class="px-4 py-4">
+<label class="flex flex-col h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-full h-full shadow-sm bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-border-dark overflow-hidden transition-all focus-within:ring-2 focus-within:ring-primary/50">
+<div class="text-muted flex items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined text-[20px] dark:text-text-secondary-dark">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none bg-transparent border-none text-base font-normal leading-normal placeholder:text-muted focus:outline-none text-text-main dark:text-text-light dark:placeholder:text-text-secondary-dark" placeholder="Search terminals, agents..." value=""/>
+</div>
+</label>
+</div>
+<div class="px-4 pb-2">
+<h2 class="text-2xl font-bold leading-tight mb-4 text-gray-900 dark:text-text-light">Good Morning, Dev.</h2>
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x">
+<div class="snap-start shrink-0 min-w-[140px] flex flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm dark:shadow-dark-card border border-gray-100 dark:border-border-dark">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-[24px]">dns</span>
+<span class="text-xs font-bold text-success bg-green-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">+20%</span>
+</div>
+<p class="text-gray-500 dark:text-text-secondary-dark text-sm font-medium mt-2">Active Terminals</p>
+<p class="text-3xl font-bold tracking-tight text-gray-900 dark:text-text-light">5</p>
+</div>
+<div class="snap-start shrink-0 min-w-[140px] flex flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm dark:shadow-dark-card border border-gray-100 dark:border-border-dark">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-blue-500 text-[24px]">smart_toy</span>
+<span class="text-xs font-bold text-success bg-green-100 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">+5%</span>
+</div>
+<p class="text-gray-500 dark:text-text-secondary-dark text-sm font-medium mt-2">Total Agents</p>
+<p class="text-3xl font-bold tracking-tight text-gray-900 dark:text-text-light">12</p>
+</div>
+<div class="snap-start shrink-0 min-w-[140px] flex flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm dark:shadow-dark-card border border-gray-100 dark:border-border-dark">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-red-500 text-[24px]">warning</span>
+<span class="text-xs font-bold text-gray-500 dark:text-text-secondary-dark bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-full">0%</span>
+</div>
+<p class="text-gray-500 dark:text-text-secondary-dark text-sm font-medium mt-2">Errors</p>
+<p class="text-3xl font-bold tracking-tight text-gray-900 dark:text-text-light">0</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col px-4 pt-4 gap-4">
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-lg font-bold text-gray-900 dark:text-text-light">Active Terminals</h3>
+<button class="text-sm font-medium text-gray-500 dark:text-text-secondary-dark hover:text-primary transition-colors">View All</button>
+</div>
+<div class="group relative flex flex-col gap-3 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm dark:shadow-dark-card border border-gray-100 dark:border-border-dark transition-transform hover:scale-[1.01] active:scale-[0.99]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-[#f0f0f0] dark:bg-white/5 flex items-center justify-center">
+<img alt="NodeJS" class="w-6 h-6" data-alt="Node JS logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_p71x3p7f9KYw_UNX9muCFQIlf_pszdqXQsDlnKGW0rZOwraP_m2G-81U2PBP_Qj2bFsB_xiJ6_sS4DdNqpCh-s0W-yyMzfp5GYhH8bvl6ZMMyyb1Pfw4PhmDTWeB-qqiEDWltu3wy7QUdeGBj-hawRb1eD5odee0jVKheEGG9-FNwNzd51j7MUea5OsGc-Z8QgWlozWeEMqLRZCPJMDDT3A-k8XnZp91OKZ0mZXlumX2k_d8QjdwTKAd_vugV8HGFeTN2wATe-0"/>
+</div>
+<div>
+<h4 class="font-bold text-base leading-none text-gray-900 dark:text-text-light">Backend-API</h4>
+<p class="text-xs text-gray-500 dark:text-text-secondary-dark mt-1">Node.js • Localhost:3000</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-2.5 w-2.5 rounded-full bg-success shadow-[0_0_8px_rgba(52,211,153,0.6)] animate-pulse"></div>
+<button class="text-gray-400 dark:text-text-secondary-dark hover:text-text-main dark:hover:text-text-light"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<div class="bg-[#0f172a] rounded-xl p-3 font-mono text-xs text-gray-300 relative overflow-hidden h-28 border border-black/10 dark:border-white/10">
+<div class="opacity-90 leading-relaxed text-slate-300">
+<span class="text-success">➜</span> <span class="text-blue-400">~/server</span> npm run dev<br/>
+                    &gt; server@1.0.0 dev<br/>
+                    &gt; nodemon src/index.js<br/>
+<span class="text-yellow-400">[nodemon]</span> 2.0.22<br/>
+<span class="text-yellow-400">[nodemon]</span> to restart at any time, enter `rs`<br/>
+<span class="text-yellow-400">[nodemon]</span> watching path(s): *.*<br/>
+                    Server listening on port 3000...<br/>
+                    Database connected.
+                </div>
+<div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<span class="text-xs text-gray-500 dark:text-text-secondary-dark font-mono">Last activity: 2s ago</span>
+<div class="flex gap-2">
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">stop</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative flex flex-col gap-3 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm dark:shadow-dark-card border border-gray-100 dark:border-border-dark transition-transform hover:scale-[1.01] active:scale-[0.99]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-[#f0f0f0] dark:bg-white/5 flex items-center justify-center">
+<img alt="Vue" class="w-6 h-6" data-alt="Vue JS logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMODVFMkh-AbpZ48zUJj1_6_Rf-f9co_eVp5n6ikks5bf0iA4cLOVZr2cYDeXSeXeFGrgzbKGtHIkHs_unGCe7stgLYSzFyr9WUUQFc87mJltHv4SexYFQeW1RDXFJdeDqauafegRO0hBibLTHEyHSgw80EpnBs5iLLxebqiOZOuUuzE9AuPd3CzGYPjVVzvJ_Qf_nlLEuqWe4RmErlJfAXWivqu9yjp0_-fEXn9XLKIwavsvLyoMNPDIMYeKV6fOrdS2v1_eLg_0"/>
+</div>
+<div>
+<h4 class="font-bold text-base leading-none text-gray-900 dark:text-text-light">Frontend-Build</h4>
+<p class="text-xs text-gray-500 dark:text-text-secondary-dark mt-1">Vite • dev-server</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-2.5 w-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+<button class="text-gray-400 dark:text-text-secondary-dark hover:text-text-main dark:hover:text-text-light"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<div class="bg-[#0f172a] rounded-xl p-3 font-mono text-xs text-gray-300 relative overflow-hidden h-28 border border-black/10 dark:border-white/10">
+<div class="opacity-90 leading-relaxed text-slate-300">
+<span class="text-success">➜</span> <span class="text-blue-400">~/app</span> vite<br/>
+<span class="text-cyan-400">  VITE v4.3.5</span>  ready in 450 ms<br/>
+<br/>
+<span class="text-success">  ➜</span>  Local:   <span class="text-cyan-400">http://localhost:5173/</span><br/>
+<span class="text-success">  ➜</span>  Network: use --host to expose<br/>
+<span class="text-gray-500">[vite] hmr update /src/App.vue</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<span class="text-xs text-gray-500 dark:text-text-secondary-dark font-mono">Last activity: 1m ago</span>
+<div class="flex gap-2">
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</button>
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">stop</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative flex flex-col gap-3 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm dark:shadow-dark-card border border-gray-100 dark:border-border-dark opacity-80 transition-transform hover:scale-[1.01] active:scale-[0.99]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-[#f0f0f0] dark:bg-white/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-600 text-[24px]">layers</span>
+</div>
+<div>
+<h4 class="font-bold text-base leading-none text-gray-900 dark:text-text-light">Docker-Stack</h4>
+<p class="text-xs text-gray-500 dark:text-text-secondary-dark mt-1">Compose • Idle</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="h-2.5 w-2.5 rounded-full bg-yellow-500"></div>
+<button class="text-gray-400 dark:text-text-secondary-dark hover:text-text-main dark:hover:text-text-light"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<div class="bg-[#0f172a] rounded-xl p-3 font-mono text-xs text-gray-300 relative overflow-hidden h-28 border border-black/10 dark:border-white/10">
+<div class="opacity-90 leading-relaxed text-slate-300">
+                    redis-1  | 1:M 24 Oct 2023 10:00:00.123 * Ready to accept connections<br/>
+                    db-1     | 2023-10-24 10:00:01 0 [Note] mysqld: ready for connections.<br/>
+                    web-1    | Exited with code 0<br/>
+<span class="text-gray-500">Gracefully stopping... (press Ctrl+C again to force)</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none"></div>
+</div>
+<div class="flex items-center justify-between mt-1">
+<span class="text-xs text-gray-500 dark:text-text-secondary-dark font-mono">Last activity: 15m ago</span>
+<div class="flex gap-2">
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+</button>
+<button class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-text-light">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="h-6"></div>
+</div>
+<button class="fixed bottom-24 right-4 z-50 h-14 w-14 rounded-full bg-primary shadow-lg shadow-primary/40 flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-lg border-t border-gray-200 dark:border-border-dark pb-6 pt-2 z-40 max-w-md mx-auto right-0">
+<div class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 p-2 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-gray-400 dark:text-text-secondary-dark hover:text-gray-900 dark:hover:text-text-light transition-colors" href="#">
+<div class="relative">
+<span class="material-symbols-outlined">terminal</span>
+<span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">5</span>
+</div>
+<span class="text-[10px] font-medium">Terminals</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-gray-400 dark:text-text-secondary-dark hover:text-gray-900 dark:hover:text-text-light transition-colors" href="#">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="text-[10px] font-medium">Agents</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-gray-400 dark:text-text-secondary-dark hover:text-gray-900 dark:hover:text-text-light transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

@@ -1,0 +1,116 @@
+{
+  "name": "terminalwon-vscode",
+  "displayName": "TerminalWON",
+  "description": "Remote terminal monitoring and control for TerminalWON Hub",
+  "version": "1.0.0",
+  "publisher": "terminalwon",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "terminal",
+    "remote",
+    "monitoring",
+    "collaboration",
+    "ai"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terminalwon.connect",
+        "title": "TerminalWON: Connect to Hub"
+      },
+      {
+        "command": "terminalwon.disconnect",
+        "title": "TerminalWON: Disconnect from Hub"
+      },
+      {
+        "command": "terminalwon.shareTerminal",
+        "title": "TerminalWON: Share Current Terminal"
+      },
+      {
+        "command": "terminalwon.openDashboard",
+        "title": "TerminalWON: Open Dashboard"
+      }
+    ],
+    "configuration": {
+      "title": "TerminalWON",
+      "properties": {
+        "terminalwon.hubUrl": {
+          "type": "string",
+          "default": "ws://localhost:3001",
+          "description": "TerminalWON Hub WebSocket URL"
+        },
+        "terminalwon.apiKey": {
+          "type": "string",
+          "default": "test-key-123",
+          "description": "Your TerminalWON API Key"
+        },
+        "terminalwon.autoConnect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically connect to hub on startup"
+        },
+        "terminalwon.shareByDefault": {
+          "type": "boolean",
+          "default": false,
+          "description": "Share new terminals by default"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "terminalwon",
+          "title": "TerminalWON",
+          "icon": "$(terminal)"
+        }
+      ]
+    },
+    "views": {
+      "terminalwon": [
+        {
+          "id": "terminalwon.terminals",
+          "name": "Active Terminals",
+          "when": "terminalwon.connected"
+        },
+        {
+          "id": "terminalwon.activity",
+          "name": "Recent Activity",
+          "when": "terminalwon.connected"
+        }
+      ]
+    },
+    "menus": {
+      "terminal/context": [
+        {
+          "command": "terminalwon.shareTerminal",
+          "when": "terminalwon.connected",
+          "group": "terminalwon"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.80.0",
+    "@types/ws": "^8.5.0",
+    "@vscode/vsce": "^3.7.1",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.14.0"
+  }
+}

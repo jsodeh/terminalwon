@@ -1,0 +1,41 @@
+# TerminalWON Docker Compose
+# Self-hosted deployment configuration
+
+version: '3.8'
+
+services:
+  terminalwon:
+    build: .
+    container_name: terminalwon
+    restart: unless-stopped
+    ports:
+      - "3002:3002"  # Hub server (WebSocket)
+      - "8080:8080"  # PWA server (HTTP)
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      # Optional: Mount for persistent data
+      - terminalwon-data:/app/data
+
+volumes:
+  terminalwon-data:
+
+# For production with SSL (using Traefik or nginx-proxy):
+#
+# networks:
+#   web:
+#     external: true
+#
+# services:
+#   terminalwon:
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.terminalwon.rule=Host(`terminalwon.yourdomain.com`)"
+#       - "traefik.http.routers.terminalwon.tls.certresolver=letsencrypt"

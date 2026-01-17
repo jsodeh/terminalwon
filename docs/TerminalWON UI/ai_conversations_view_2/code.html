@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON AI Conversations</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9f506",
+                        "background-light": "#f8f8f5",
+                        // Dark Mode Palette Specification
+                        "dark-bg": "#0F172A",          // Background
+                        "dark-surface": "#1E293B",     // Surface
+                        "dark-text-primary": "#F1F5F9",// Primary Text
+                        "dark-text-secondary": "#94A3B8", // Secondary Text
+                        "dark-border": "#334155",      // Border
+                        "indigo-bright": "#6366F1",    // Indigo
+                        "code-bg": "#0B1221",          // Slightly darker than surface for code
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>.scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .code-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .code-scroll::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        .code-scroll::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-dark-bg font-display h-screen flex flex-col overflow-hidden text-[#181811] dark:text-dark-text-primary">
+<header class="flex-none flex items-center bg-background-light dark:bg-dark-bg p-4 pb-2 justify-between z-20 border-b border-gray-200 dark:border-dark-border">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-dark-surface transition-colors text-[#181811] dark:text-dark-text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex flex-col items-center flex-1 mx-2">
+<h2 class="text-[#181811] dark:text-dark-text-primary text-lg font-bold leading-tight tracking-[-0.015em]">backend-api-v2</h2>
+<div class="flex items-center gap-1 opacity-60">
+<span class="size-2 rounded-full bg-green-500 block"></span>
+<span class="text-xs font-medium dark:text-dark-text-secondary">Online</span>
+</div>
+</div>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center rounded-full size-10 bg-transparent text-[#181811] dark:text-dark-text-primary hover:bg-black/5 dark:hover:bg-dark-surface transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto w-full relative flex flex-col pb-4 px-2 sm:px-4 space-y-2 scroll-smooth">
+<div class="flex justify-center py-6">
+<span class="text-xs font-medium text-gray-400 dark:text-dark-text-secondary bg-gray-100 dark:bg-dark-surface px-3 py-1 rounded-full border dark:border-dark-border">Today, 10:02 AM</span>
+</div>
+<div class="flex gap-3 px-2 py-1 items-start opacity-80">
+<div class="flex items-center justify-center size-8 rounded-full bg-gray-200 dark:bg-dark-surface dark:border dark:border-dark-border shrink-0 mt-1">
+<span class="material-symbols-outlined text-sm text-gray-600 dark:text-dark-text-secondary">info</span>
+</div>
+<div class="flex flex-1 flex-col justify-center min-h-[40px]">
+<p class="text-sm font-medium italic text-gray-600 dark:text-dark-text-secondary">System connected to remote agent at 192.168.1.42 via SSH.</p>
+</div>
+</div>
+<div class="group flex gap-3 px-2 py-2">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 border border-gray-200 dark:border-dark-border" data-alt="User Avatar Profile Picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBXHAjD60Q8Xcv9kIjeU8SHneGBbaxctdRVKDqwtRN5n6pWy1sIot4-HcSos3D2obb26pC4lTqc1Oh0lf-vDHe6ZhAt3aMGRh7R91CfnVOBrHJz6WsKzHZzlcNGL0rGSO0agCKTQolvymc84Cbt6gVKk8Ntl7F0BfiMfjhIuWd6dpTFAoyIGtO6xNjsYqT78zDumQao9r8qi4QWdf2uS2MLOhJmDaFCQjtLhfnp2tVS0Iey_F7DgI-nP7dvk1FBRQN9lyIX3Mngw84");'>
+</div>
+</div>
+<div class="flex flex-1 flex-col items-stretch gap-1">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-[#181811] dark:text-dark-text-primary">You</span>
+</div>
+<div class="border-l-[3px] border-indigo-bright pl-3 py-0.5">
+<p class="text-base text-[#181811] dark:text-dark-text-primary font-normal leading-relaxed">
+                        I'm getting a 500 error on the <code class="bg-gray-100 dark:bg-dark-surface px-1 rounded text-sm text-pink-600 dark:text-pink-400 font-mono border dark:border-dark-border">/auth/login</code> route. Can you check the nginx logs and see what's failing?
+                    </p>
+</div>
+</div>
+</div>
+<div class="flex gap-3 px-2 py-1 items-start animate-pulse">
+<div class="flex items-center justify-center size-8 rounded-full bg-black dark:bg-dark-surface border dark:border-dark-border text-white dark:text-dark-text-primary shrink-0 mt-1">
+<span class="material-symbols-outlined text-base">terminal</span>
+</div>
+<div class="flex flex-1 flex-col gap-1">
+<div class="flex items-center gap-2 mt-1">
+<span class="text-sm font-bold text-[#181811] dark:text-dark-text-primary">Terminal Agent</span>
+<span class="text-xs text-gray-400 dark:text-dark-text-secondary">GPT-4o</span>
+</div>
+<div class="flex items-center gap-2 text-gray-500 dark:text-dark-text-secondary">
+<span class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+<span class="text-sm italic">Scanning /var/log/nginx/error.log...</span>
+</div>
+</div>
+</div>
+<div class="group flex gap-3 px-2 py-2">
+<div class="relative shrink-0">
+<div class="flex items-center justify-center size-8 rounded-full bg-black dark:bg-dark-surface border dark:border-dark-border text-white dark:text-indigo-bright shrink-0 mt-1 shadow-sm">
+<span class="material-symbols-outlined text-base">smart_toy</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col items-stretch gap-2">
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-[#181811] dark:text-dark-text-primary">Terminal Agent</span>
+<span class="text-xs text-gray-400 dark:text-dark-text-secondary">10:04 AM</span>
+</div>
+<div class="prose dark:prose-invert max-w-none">
+<p class="text-base text-[#181811] dark:text-dark-text-primary leading-relaxed">
+                        I found the issue. It looks like the database connection pool is exhausted. The application is timing out while waiting for a connection.
+                    </p>
+<p class="text-base text-[#181811] dark:text-dark-text-primary leading-relaxed mt-2">
+                        Here is the traceback from the log:
+                    </p>
+</div>
+<div class="mt-2 rounded-lg overflow-hidden border border-gray-200 dark:border-dark-border bg-code-bg shadow-sm">
+<div class="flex items-center justify-between px-3 py-2 bg-[#2d2d2d] dark:bg-dark-surface border-b border-white/10 dark:border-dark-border">
+<span class="text-xs font-mono text-gray-300 dark:text-dark-text-secondary">python-traceback</span>
+<button class="flex items-center gap-1 text-xs text-gray-400 dark:text-dark-text-secondary hover:text-white dark:hover:text-dark-text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+                            Copy
+                        </button>
+</div>
+<div class="overflow-x-auto code-scroll p-3 bg-code-bg">
+<pre class="font-mono text-sm leading-relaxed text-gray-300 dark:text-dark-text-primary"><code><span class="text-blue-400 dark:text-indigo-400">File</span> "/app/api/auth.py", line 45, in login
+    user = db.query(User).filter_by(email=email).first()
+<span class="text-blue-400 dark:text-indigo-400">File</span> "/usr/local/lib/python3.9/site-packages/sqlalchemy/orm/query.py", line 2819, in first
+    return self.limit(1).all()
+<span class="text-red-400 dark:text-rose-400">sqlalchemy.exc.TimeoutError</span>: QueuePool limit of size 5 overflow 10 reached, connection timed out, timeout 30.00</code></pre>
+</div>
+</div>
+<p class="text-base text-[#181811] dark:text-dark-text-primary leading-relaxed mt-1">
+                    I recommend increasing the <code class="bg-gray-100 dark:bg-dark-surface px-1 rounded text-sm text-pink-600 dark:text-pink-400 font-mono border dark:border-dark-border">DB_POOL_SIZE</code> in your configuration.
+                </p>
+<div class="flex flex-wrap gap-2 mt-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-primary rounded-full hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-black text-sm">check</span>
+<span class="text-xs font-bold text-black">Apply Fix</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 dark:bg-dark-surface border border-gray-200 dark:border-dark-border rounded-full hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-[#181811] dark:text-dark-text-primary text-sm">refresh</span>
+<span class="text-xs font-semibold text-[#181811] dark:text-dark-text-primary">Regenerate</span>
+</button>
+</div>
+</div>
+</div>
+<div class="h-24"></div>
+</main>
+<div class="fixed bottom-24 right-4 z-10">
+<button class="shadow-lg flex items-center justify-center size-12 bg-white dark:bg-indigo-bright text-[#181811] dark:text-white rounded-full border border-gray-200 dark:border-none">
+<span class="material-symbols-outlined">add_comment</span>
+</button>
+</div>
+<div class="flex-none w-full bg-background-light dark:bg-dark-bg p-2 pb-4 sm:p-4 z-20 border-t border-gray-100 dark:border-dark-border">
+<div class="relative flex items-end gap-2 bg-white dark:bg-dark-surface p-2 rounded-[1.5rem] shadow-lg border border-gray-100 dark:border-dark-border">
+<button class="flex-none flex items-center justify-center size-10 rounded-full text-gray-400 dark:text-dark-text-secondary hover:text-[#181811] dark:hover:text-dark-text-primary hover:bg-gray-100 dark:hover:bg-dark-bg transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<div class="flex-1 min-w-0 py-2">
+<textarea class="w-full bg-transparent border-none focus:ring-0 p-0 text-[#181811] dark:text-dark-text-primary placeholder-gray-400 dark:placeholder-dark-text-secondary font-display text-base resize-none max-h-32" placeholder="Ask TerminalWON..." rows="1" style="min-height: 24px;"></textarea>
+<div class="flex gap-2 mt-1">
+<button class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-dark-bg border dark:border-dark-border text-xs font-mono text-gray-500 dark:text-dark-text-secondary hover:text-indigo-500 dark:hover:text-indigo-bright transition-colors">
+<span class="opacity-50">/</span>cmd
+                    </button>
+<button class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-dark-bg border dark:border-dark-border text-xs font-mono text-gray-500 dark:text-dark-text-secondary hover:text-indigo-500 dark:hover:text-indigo-bright transition-colors">
+<span class="opacity-50">@</span>file
+                    </button>
+</div>
+</div>
+<div class="flex-none flex items-center gap-2 pb-1">
+<div class="hidden sm:flex px-2 py-1 bg-gray-100 dark:bg-dark-bg rounded-full border border-gray-200 dark:border-dark-border">
+<span class="text-[10px] font-bold text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide">GPT-4</span>
+</div>
+<button class="flex items-center justify-center size-10 rounded-full bg-primary text-black hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="fixed inset-0 z-50 pointer-events-none opacity-0">
+<div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+<div class="absolute left-0 top-0 h-full w-64 bg-white dark:bg-dark-bg flex flex-col shadow-2xl transform -translate-x-full transition-transform duration-300 border-r dark:border-dark-border">
+<div class="p-4 border-b border-gray-100 dark:border-dark-border flex items-center justify-between">
+<h3 class="font-bold text-lg text-[#181811] dark:text-dark-text-primary">Conversations</h3>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-dark-surface text-gray-600 dark:text-dark-text-primary">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<button class="w-full flex items-center gap-3 p-3 rounded-xl bg-gray-100 dark:bg-dark-surface border dark:border-dark-border">
+<span class="material-symbols-outlined text-gray-600 dark:text-indigo-bright">terminal</span>
+<div class="flex-1 text-left overflow-hidden">
+<p class="font-bold text-sm text-[#181811] dark:text-dark-text-primary truncate">backend-api-v2</p>
+<p class="text-xs text-gray-500 dark:text-dark-text-secondary truncate">Looking at nginx logs...</p>
+</div>
+<span class="size-2 bg-indigo-500 dark:bg-indigo-bright rounded-full"></span>
+</button>
+<button class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-dark-surface transition-colors">
+<span class="material-symbols-outlined text-gray-400 dark:text-dark-text-secondary">database</span>
+<div class="flex-1 text-left overflow-hidden">
+<p class="font-bold text-sm text-[#181811] dark:text-dark-text-primary truncate">db-cluster-01</p>
+<p class="text-xs text-gray-500 dark:text-dark-text-secondary truncate">Query optimization help</p>
+</div>
+</button>
+</div>
+<div class="p-4 border-t border-gray-100 dark:border-dark-border">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-black font-bold py-3 rounded-full hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined">add</span>
+                    New Chat
+                </button>
+</div>
+</div>
+</div>
+
+</body></html>

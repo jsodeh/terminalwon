@@ -1,0 +1,36 @@
+{
+  "name": "terminalwon",
+  "version": "2.0.0",
+  "description": "Stream any terminal to your phone - CLI-first terminal streaming tool",
+  "private": true,
+  "scripts": {
+    "start": "./start-terminalwon.sh",
+    "server": "node server/hub-server.js",
+    "pwa": "node server/mobile-server.js",
+    "cli:build": "cd cli && npm run build",
+    "cli:link": "cd cli && npm link",
+    "setup": "cd server && npm install && cd ../cli && npm install && npm run build && npm link"
+  },
+  "keywords": [
+    "terminal",
+    "streaming",
+    "cli",
+    "mobile",
+    "pwa",
+    "websocket",
+    "pty"
+  ],
+  "author": "Joseph Odeh <@thatjosephodeh>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsodeh/terminalwon"
+  },
+  "homepage": "https://github.com/jsodeh/terminalwon#readme",
+  "bugs": {
+    "url": "https://github.com/jsodeh/terminalwon/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

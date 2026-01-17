@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON AI Sessions</title>
+<meta name="theme-color" content="#f9f506">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TerminalWON">
+<link rel="manifest" href="manifest.json">
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#f9f506",
+                    "background-light": "#f8f8f5",
+                    "background-dark": "#23220f",
+                    "surface-light": "#ffffff",
+                    "surface-dark": "#2c2b18",
+                    "text-main": "#181811",
+                    "text-light": "#f2f2f2",
+                    "muted": "#8c8b5f",
+                },
+                fontFamily: {
+                    "display": ["Spline Sans", "sans-serif"],
+                    "mono": ["JetBrains Mono", "monospace"],
+                },
+                borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+            },
+        },
+    }
+</script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display h-screen flex flex-col overflow-hidden text-text-main dark:text-text-light max-w-md mx-auto">
+<style>
+    /* Custom Scrollbar */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    body { min-height: max(884px, 100dvh); }
+    /* IDE badges */
+    .badge-kiro { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .badge-cursor { background: linear-gradient(135deg, #10b981, #059669); }
+    .badge-antigravity { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    /* Card animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .card-animate { animation: fadeIn 0.3s ease-out; }
+    /* Connection status pulse */
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .status-pulse { animation: pulse 2s infinite; }
+</style>
+
+<!-- Top Navigation Bar -->
+<header class="flex-none flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between z-20 border-b border-gray-200 dark:border-gray-800">
+    <button onclick="goBack()" class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-text-main dark:text-white">
+        <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <div class="flex flex-col items-center flex-1 mx-2">
+        <h2 class="text-text-main dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Chat Sessions</h2>
+        <div id="connectionStatus" class="flex items-center gap-1 opacity-60">
+            <span id="statusDot" class="size-2 rounded-full bg-yellow-500 block status-pulse"></span>
+            <span id="statusText" class="text-xs font-medium">Connecting...</span>
+        </div>
+    </div>
+    <div class="flex items-center justify-end gap-1">
+        <!-- IDE Filter Dropdown -->
+        <div class="relative">
+            <button id="filterBtn" onclick="toggleFilterDropdown()" class="flex items-center justify-center rounded-full size-10 bg-transparent text-text-main dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                <span class="material-symbols-outlined">filter_list</span>
+            </button>
+            <div id="filterDropdown" class="hidden absolute right-0 top-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[140px] z-30">
+                <button onclick="setFilter('all')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="all">
+                    <span class="material-symbols-outlined text-base">apps</span> All IDEs
+                </button>
+                <button onclick="setFilter('kiro')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="kiro">
+                    <span class="size-3 rounded-full badge-kiro"></span> Kiro
+                </button>
+                <button onclick="setFilter('cursor')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="cursor">
+                    <span class="size-3 rounded-full badge-cursor"></span> Cursor
+                </button>
+                <button onclick="setFilter('antigravity')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="antigravity">
+                    <span class="size-3 rounded-full badge-antigravity"></span> Antigravity
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Search Bar -->
+<div class="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+    <label class="flex flex-col h-10 w-full">
+        <div class="flex w-full flex-1 items-stretch rounded-full h-full bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-white/5 overflow-hidden transition-all focus-within:ring-2 focus-within:ring-primary/50">
+            <div class="text-muted flex items-center justify-center pl-4 pr-2">
+                <span class="material-symbols-outlined text-[18px]">search</span>
+            </div>
+            <input id="searchInput" oninput="handleSearch()" class="flex w-full min-w-0 flex-1 resize-none bg-transparent border-none text-sm font-normal leading-normal placeholder:text-muted focus:outline-none text-text-main dark:text-text-light" placeholder="Search conversations..." value=""/>
+        </div>
+    </label>
+</div>
+
+<!-- Session List -->
+<div id="sessionListView" class="flex-1 overflow-y-auto w-full relative flex flex-col pb-24 px-4 space-y-3 pt-4">
+    <!-- Loading State -->
+    <div id="loadingState" class="flex flex-col items-center justify-center h-full gap-4">
+        <span class="material-symbols-outlined text-4xl animate-spin text-gray-400">progress_activity</span>
+        <p class="text-gray-500 dark:text-gray-400">Loading conversations...</p>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden flex-col items-center justify-center h-full gap-4 text-center px-8">
+        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">chat_bubble_outline</span>
+        <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-400">No Conversations Yet</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-500">Start a chat in Kiro or Cursor to see your AI conversations here.</p>
+    </div>
+    
+    <!-- Session Cards Container -->
+    <div id="sessionList" class="hidden space-y-3"></div>
+</div>
+
+<!-- Reconnection Banner -->
+<div id="reconnectBanner" class="hidden fixed top-16 left-0 right-0 bg-yellow-500 text-black px-4 py-2 text-center text-sm font-medium z-30 max-w-md mx-auto">
+    <span class="material-symbols-outlined text-sm align-middle mr-1">wifi_off</span>
+    Connection lost. Reconnecting<span id="reconnectDots">...</span>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-lg border-t border-gray-200 dark:border-white/10 pb-6 pt-2 z-40 max-w-md mx-auto right-0">
+    <div class="flex justify-around items-center">
+        <a class="flex flex-col items-center gap-1 p-2 text-muted hover:text-text-main dark:hover:text-white transition-colors" href="mobile-dashboard.html">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="text-[10px] font-medium">Home</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 p-2 text-muted hover:text-text-main dark:hover:text-white transition-colors" href="mobile-terminal-detail.html">
+            <span class="material-symbols-outlined">terminal</span>
+            <span class="text-[10px] font-medium">Terminals</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 p-2 text-text-main dark:text-primary" href="mobile-ai-sessions.html">
+            <span class="material-symbols-outlined fill-1">smart_toy</span>
+            <span class="text-[10px] font-medium">AI Chat</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 p-2 text-muted hover:text-text-main dark:hover:text-white transition-colors" href="mobile-activity-feed.html">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="text-[10px] font-medium">Activity</span>
+        </a>
+    </div>
+</nav>
+
+<script>
+// ============================================
+// State Management
+// ============================================
+let ws = null;
+let sessions = [];
+let currentFilter = 'all';
+let searchQuery = '';
+let isConnected = false;
+let reconnectAttempts = 0;
+let reconnectTimeout = null;
+const MAX_RECONNECT_DELAY = 30000;
+const BASE_RECONNECT_DELAY = 1000;
+
+// ============================================
+// WebSocket Connection Management
+// ============================================
+function connect() {
+    if (ws && ws.readyState === WebSocket.OPEN) return;
+    
+    try {
+        ws = new WebSocket('ws://localhost:3002');
+        
+        ws.onopen = () => {
+            console.log('AI Sessions: Connected to TerminalWON Hub');
+            isConnected = true;
+            reconnectAttempts = 0;
+            updateConnectionStatus('connected');
+            hideReconnectBanner();
+            
+            // Send authentication
+            ws.send(JSON.stringify({
+                type: 'auth',
+                payload: {
+                    tool: 'mobile-pwa-ai-sessions',
+                    platform: 'browser',
+                    apiKey: 'test-key-123'
+                },
+                timestamp: new Date().toISOString(),
+                messageId: `ai-sessions-${Date.now()}`
+            }));
+            
+            // Subscribe to chat updates
+            ws.send(JSON.stringify({
+                type: 'chat.subscribe',
+                timestamp: new Date().toISOString(),
+                messageId: `sub-${Date.now()}`
+            }));
+            
+            // Fetch session list
+            fetchSessions();
+        };
+        
+        ws.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                handleMessage(message);
+            } catch (e) {
+                console.error('Error parsing message:', e);
+            }
+        };
+        
+        ws.onclose = () => {
+            console.log('AI Sessions: Disconnected from hub');
+            isConnected = false;
+            updateConnectionStatus('disconnected');
+            scheduleReconnect();
+        };
+        
+        ws.onerror = (error) => {
+            console.error('AI Sessions WebSocket error:', error);
+            isConnected = false;
+            updateConnectionStatus('error');
+        };
+        
+    } catch (error) {
+        console.error('AI Sessions connection failed:', error);
+        isConnected = false;
+        updateConnectionStatus('error');
+        scheduleReconnect();
+    }
+}
+
+function scheduleReconnect() {
+    if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    
+    reconnectAttempts++;
+    const delay = Math.min(BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts - 1), MAX_RECONNECT_DELAY);
+    
+    showReconnectBanner();
+    console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts})`);
+    
+    reconnectTimeout = setTimeout(connect, delay);
+}
+
+function updateConnectionStatus(status) {
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    
+    switch (status) {
+        case 'connected':
+            dot.className = 'size-2 rounded-full bg-green-500 block';
+            text.textContent = 'Online';
+            break;
+        case 'disconnected':
+            dot.className = 'size-2 rounded-full bg-red-500 block status-pulse';
+            text.textContent = 'Offline';
+            break;
+        case 'error':
+            dot.className = 'size-2 rounded-full bg-red-500 block';
+            text.textContent = 'Error';
+            break;
+        default:
+            dot.className = 'size-2 rounded-full bg-yellow-500 block status-pulse';
+            text.textContent = 'Connecting...';
+    }
+}
+
+function showReconnectBanner() {
+    document.getElementById('reconnectBanner').classList.remove('hidden');
+    animateReconnectDots();
+}
+
+function hideReconnectBanner() {
+    document.getElementById('reconnectBanner').classList.add('hidden');
+}
+
+let dotsInterval = null;
+function animateReconnectDots() {
+    if (dotsInterval) clearInterval(dotsInterval);
+    let dots = 0;
+    dotsInterval = setInterval(() => {
+        dots = (dots + 1) % 4;
+        document.getElementById('reconnectDots').textContent = '.'.repeat(dots || 1);
+    }, 500);
+}
+
+// ============================================
+// Message Handling
+// ============================================
+function handleMessage(message) {
+    console.log('AI Sessions received:', message.type);
+    
+    switch (message.type) {
+        case 'chat.sessions':
+            handleSessionsList(message.payload.sessions);
+            break;
+        case 'chat.message.new':
+            handleNewMessage(message.payload);
+            break;
+        case 'chat.subscribed':
+            console.log('Subscribed to chat updates:', message.payload.success);
+            break;
+    }
+}
+
+function handleSessionsList(sessionList) {
+    sessions = sessionList || [];
+    renderSessionList();
+}
+
+function handleNewMessage(payload) {
+    const { sessionId, sourceIDE, message } = payload;
+    
+    // Update session in list
+    const sessionIndex = sessions.findIndex(s => s.id === sessionId);
+    if (sessionIndex !== -1) {
+        sessions[sessionIndex].messageCount = (sessions[sessionIndex].messageCount || 0) + 1;
+        sessions[sessionIndex].lastActivity = message.timestamp;
+        // Move updated session to top
+        const updatedSession = sessions.splice(sessionIndex, 1)[0];
+        sessions.unshift(updatedSession);
+    }
+    
+    // Re-render session list
+    renderSessionList();
+}
+
+// ============================================
+// API Calls
+// ============================================
+function fetchSessions() {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    
+    ws.send(JSON.stringify({
+        type: 'chat.sessions.list',
+        timestamp: new Date().toISOString(),
+        messageId: `list-${Date.now()}`
+    }));
+}
+
+// ============================================
+// Rendering Functions
+// ============================================
+function renderSessionList() {
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+    const sessionList = document.getElementById('sessionList');
+    
+    // Filter sessions by IDE and search query
+    let filteredSessions = currentFilter === 'all' 
+        ? sessions 
+        : sessions.filter(s => s.sourceIDE === currentFilter);
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filteredSessions = filteredSessions.filter(s => 
+            (s.title && s.title.toLowerCase().includes(query)) ||
+            (s.workspaceName && s.workspaceName.toLowerCase().includes(query)) ||
+            (s.workspacePath && s.workspacePath.toLowerCase().includes(query))
+        );
+    }
+    
+    loadingState.classList.add('hidden');
+    
+    if (filteredSessions.length === 0) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        sessionList.classList.add('hidden');
+        return;
+    }
+    
+    emptyState.classList.add('hidden');
+    emptyState.classList.remove('flex');
+    sessionList.classList.remove('hidden');
+    
+    sessionList.innerHTML = filteredSessions.map((session, index) => `
+        <div onclick="openConversation('${session.id}')" class="card-animate bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-white/5 hover:border-primary/50 transition-all cursor-pointer shadow-sm hover:shadow-md" style="animation-delay: ${index * 50}ms">
+            <div class="flex items-start gap-3">
+                <div class="flex items-center justify-center size-12 rounded-xl ${getIdeBadgeClass(session.sourceIDE)} text-white shrink-0">
+                    <span class="material-symbols-outlined text-xl">${getIdeIcon(session.sourceIDE)}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h3 class="font-bold text-text-main dark:text-white truncate">${escapeHtml(session.title || 'Untitled')}</h3>
+                    </div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${getIdeLabelClass(session.sourceIDE)}">${session.sourceIDE}</span>
+                        <span class="text-xs text-muted truncate">${escapeHtml(session.workspaceName || extractWorkspaceName(session.workspacePath) || 'Unknown workspace')}</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs text-muted">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">chat</span>
+                            ${session.messageCount || 0} messages
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                            ${formatDate(session.lastActivity || session.dateCreated)}
+                        </span>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined text-muted">chevron_right</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================
+// Navigation
+// ============================================
+function openConversation(sessionId) {
+    // Navigate to the conversation detail page with session ID
+    window.location.href = `mobile-ai-conversations.html?session=${sessionId}`;
+}
+
+function goBack() {
+    window.location.href = 'mobile-dashboard.html';
+}
+
+// ============================================
+// Filter Management
+// ============================================
+function toggleFilterDropdown() {
+    const dropdown = document.getElementById('filterDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+function setFilter(filter) {
+    currentFilter = filter;
+    document.getElementById('filterDropdown').classList.add('hidden');
+    
+    // Update active state
+    document.querySelectorAll('.filter-option').forEach(btn => {
+        const isActive = btn.dataset.filter === filter;
+        btn.classList.toggle('bg-gray-100', isActive);
+        btn.classList.toggle('dark:bg-gray-700', isActive);
+    });
+    
+    renderSessionList();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    const filterBtn = document.getElementById('filterBtn');
+    const dropdown = document.getElementById('filterDropdown');
+    
+    if (!filterBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+// ============================================
+// Search
+// ============================================
+function handleSearch() {
+    searchQuery = document.getElementById('searchInput').value;
+    renderSessionList();
+}
+
+// ============================================
+// Utility Functions
+// ============================================
+function getIdeBadgeClass(ide) {
+    switch (ide) {
+        case 'kiro': return 'badge-kiro';
+        case 'cursor': return 'badge-cursor';
+        case 'antigravity': return 'badge-antigravity';
+        default: return 'badge-cursor';
+    }
+}
+
+function getIdeIcon(ide) {
+    switch (ide) {
+        case 'kiro': return 'smart_toy';
+        case 'cursor': return 'code';
+        case 'antigravity': return 'rocket_launch';
+        default: return 'code';
+    }
+}
+
+function getIdeLabelClass(ide) {
+    switch (ide) {
+        case 'kiro': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300';
+        case 'cursor': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300';
+        case 'antigravity': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300';
+        default: return 'bg-gray-100 text-gray-700 dark:bg-gray-900/50 dark:text-gray-300';
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function extractWorkspaceName(path) {
+    if (!path) return null;
+    const parts = path.split('/').filter(Boolean);
+    return parts[parts.length - 1] || null;
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return 'Unknown';
+    
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return 'Unknown';
+    
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ============================================
+// Initialization
+// ============================================
+window.onload = () => {
+    // Check for dark mode preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+    
+    // Connect to WebSocket
+    setTimeout(connect, 500);
+};
+
+// Handle visibility change to reconnect when tab becomes visible
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !isConnected) {
+        connect();
+    }
+});
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => console.log('SW registered'))
+            .catch(error => console.log('SW registration failed:', error));
+    });
+}
+</script>
+</body>
+</html>

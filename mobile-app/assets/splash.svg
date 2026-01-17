@@ -1,0 +1,6 @@
+
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1024" height="1024" fill="#f9f506"/>
+  <rect x="150" y="300" width="724" height="424" rx="60" fill="#000"/>
+  <text x="512" y="580" font-family="monospace" font-size="120" text-anchor="middle" fill="#f9f506">TerminalWON</text>
+</svg>

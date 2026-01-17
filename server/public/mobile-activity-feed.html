@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON Activity Feed</title>
+<meta name="theme-color" content="#135bec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TerminalWON">
+<link rel="manifest" href="manifest.json">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "card-light": "#ffffff",
+                        "card-dark": "#1a2234",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#2d3748",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for chrome/safari/opera */
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased max-w-md mx-auto">
+<!-- Main Container: Centered, Mobile Form Factor -->
+<main class="min-h-screen bg-card-light dark:bg-card-dark relative shadow-sm">
+<!-- Sticky Header (TopAppBar) -->
+<header class="sticky top-0 z-40 bg-card-light/90 dark:bg-card-dark/90 backdrop-blur-md border-b border-border-light dark:border-border-dark">
+<div class="flex items-center justify-between px-4 py-3">
+<div class="flex items-center gap-3">
+<button onclick="goBack()" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold tracking-tight">Activity Feed</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-background-light dark:hover:bg-background-dark text-slate-600 dark:text-slate-300 transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+<!-- Filter Tabs (Chips) -->
+<div class="flex gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+<!-- Active Chip -->
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-900 dark:bg-white px-4 transition-transform active:scale-95">
+<span class="text-white dark:text-slate-900 text-sm font-semibold">All Activity</span>
+</button>
+<!-- Inactive Chips -->
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-colors">
+<span class="material-symbols-outlined text-[18px] text-slate-500 dark:text-slate-400">terminal</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Commands</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-colors">
+<span class="material-symbols-outlined text-[18px] text-red-500">error</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Errors</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-colors">
+<span class="material-symbols-outlined text-[18px] text-purple-500">auto_awesome</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">AI Messages</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 transition-colors">
+<span class="material-symbols-outlined text-[18px] text-slate-500">group</span>
+<span class="text-slate-700 dark:text-slate-200 text-sm font-medium">Team</span>
+</button>
+</div>
+</header>
+
+<!-- New Activity Indicator (SectionHeader) -->
+<div class="flex justify-center py-4 border-b border-border-light dark:border-border-dark bg-background-light/50 dark:bg-background-dark/30 animate-pulse cursor-pointer hover:bg-background-light dark:hover:bg-background-dark/50 transition-colors">
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-primary"></span>
+<span class="text-primary text-sm font-semibold">New activity detected</span>
+</div>
+</div>
+
+<!-- Feed List -->
+<div class="flex flex-col">
+<!-- Feed Item 1: Command (Devin AI) -->
+<article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors cursor-pointer group">
+<!-- Avatar -->
+<div class="shrink-0">
+<div class="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px]">
+<div class="h-full w-full rounded-full bg-white dark:bg-slate-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-purple-500">smart_toy</span>
+</div>
+</div>
+</div>
+<!-- Content -->
+<div class="flex flex-col flex-1 min-w-0">
+<!-- Header Row -->
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2 overflow-hidden">
+<span class="font-bold text-slate-900 dark:text-white truncate">Devin (AI Agent)</span>
+<span class="material-symbols-outlined text-[16px] text-blue-500 filled" title="Verified">verified</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">· 2m ago</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Context Badges -->
+<div class="flex items-center gap-2 mb-2">
+<span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300 ring-1 ring-inset ring-slate-500/10">
+<span class="material-symbols-outlined text-[14px] mr-1">terminal</span>
+                            Project-Terminal
+                        </span>
+<span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/20 px-2 py-0.5 text-xs font-medium text-green-700 dark:text-green-400 ring-1 ring-inset ring-green-600/20">
+                            Success
+                        </span>
+</div>
+<!-- Description -->
+<p class="text-slate-800 dark:text-slate-200 text-sm leading-relaxed mb-2">
+                        Executed initialization script for the new backend service.
+                    </p>
+<!-- Code Block -->
+<div class="bg-slate-100 dark:bg-[#0d1117] rounded-lg p-3 mb-3 border border-border-light dark:border-slate-800">
+<code class="font-mono text-xs text-slate-700 dark:text-slate-300 break-all">
+<span class="text-primary font-bold">➜</span> npm install &amp;&amp; npm run build
+                        </code>
+</div>
+<!-- Action Bar -->
+<div class="flex items-center justify-between max-w-md mt-1">
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-blue-50 dark:group-hover/btn:bg-blue-900/20">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+<span class="text-xs font-medium">View</span>
+</button>
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-green-600 transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-green-50 dark:group-hover/btn:bg-green-900/20">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+</div>
+<span class="text-xs font-medium">Rerun</span>
+</button>
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-purple-500 transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-purple-50 dark:group-hover/btn:bg-purple-900/20">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</div>
+<span class="text-xs font-medium">Copy</span>
+</button>
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-slate-100 dark:group-hover/btn:bg-slate-800">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</div>
+</button>
+</div>
+</div>
+</article>
+
+<!-- Feed Item 2: Error (User Activity) -->
+<article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors cursor-pointer group">
+<!-- Avatar -->
+<div class="shrink-0">
+<div class="h-12 w-12 rounded-full bg-cover bg-center border border-border-light dark:border-border-dark" style="background-image: url('https://via.placeholder.com/48')"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<!-- Header -->
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-900 dark:text-white">Sarah Chen</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">@sarah_dev · 15m ago</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<!-- Context -->
+<div class="flex items-center gap-2 mb-2">
+<span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300 ring-1 ring-inset ring-slate-500/10">
+<span class="material-symbols-outlined text-[14px] mr-1">dns</span>
+                            prod-db-cluster-01
+                        </span>
+<span class="inline-flex items-center rounded-md bg-red-50 dark:bg-red-900/20 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-400 ring-1 ring-inset ring-red-600/20">
+                            Failed
+                        </span>
+</div>
+<p class="text-slate-800 dark:text-slate-200 text-sm leading-relaxed mb-2">
+                        Connection timeout during migration. Rolling back changes.
+                    </p>
+<div class="bg-red-50 dark:bg-red-900/10 rounded-lg p-3 mb-3 border border-red-100 dark:border-red-900/30">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-red-500 text-[16px] mt-0.5">error</span>
+<code class="font-mono text-xs text-red-700 dark:text-red-300 break-all">
+                                Error: ETIMEDOUT calling tcp://192.168.1.4:5432
+                            </code>
+</div>
+</div>
+<div class="flex items-center justify-between max-w-md mt-1">
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-blue-50 dark:group-hover/btn:bg-blue-900/20">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+<span class="text-xs font-medium">Logs</span>
+</button>
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-red-600 transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-red-50 dark:group-hover/btn:bg-red-900/20">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+</div>
+<span class="text-xs font-medium">Retry</span>
+</button>
+<div class="flex-1"></div>
+</div>
+</div>
+</article>
+
+<!-- Feed Item 3: AI Message -->
+<article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors cursor-pointer group">
+<div class="shrink-0">
+<div class="h-12 w-12 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900">
+<span class="font-bold text-xs tracking-tighter">TW</span>
+</div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-900 dark:text-white">TerminalWON AI</span>
+<span class="material-symbols-outlined text-[16px] text-purple-500 filled">auto_awesome</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">· 1h ago</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300 ring-1 ring-inset ring-purple-700/10">
+                            Suggestion
+                        </span>
+</div>
+<p class="text-slate-800 dark:text-slate-200 text-sm leading-relaxed mb-2">
+                        High memory usage detected in <span class="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-1 rounded">worker-node-3</span>. I recommend increasing the heap size limit or scaling horizontally.
+                    </p>
+<div class="flex items-center justify-between max-w-md mt-1">
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-purple-600 transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-purple-50 dark:group-hover/btn:bg-purple-900/20">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</div>
+<span class="text-xs font-medium">Apply Fix</span>
+</button>
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-blue-50 dark:group-hover/btn:bg-blue-900/20">
+<span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+</div>
+<span class="text-xs font-medium">Chat</span>
+</button>
+</div>
+</div>
+</article>
+
+<!-- Feed Item 4: Team Activity (Terminal Created) -->
+<article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors cursor-pointer group">
+<div class="shrink-0">
+<div class="h-12 w-12 rounded-full bg-cover bg-center border border-border-light dark:border-border-dark" style="background-image: url('https://via.placeholder.com/48')"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-900 dark:text-white">Mike Ross</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">@mike_r · 2h ago</span>
+</div>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300 ring-1 ring-inset ring-slate-500/10">
+<span class="material-symbols-outlined text-[14px] mr-1">laptop_mac</span>
+                            Local-Env
+                        </span>
+</div>
+<p class="text-slate-800 dark:text-slate-200 text-sm leading-relaxed mb-2">
+                        Connected to a new local session.
+                    </p>
+<div class="flex items-center justify-between max-w-md mt-1">
+<button class="group/btn flex items-center gap-1.5 text-slate-500 hover:text-primary transition-colors">
+<div class="p-1.5 rounded-full group-hover/btn:bg-blue-50 dark:group-hover/btn:bg-blue-900/20">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</div>
+<span class="text-xs font-medium">Join Session</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+
+<!-- Load More -->
+<div class="p-6 flex justify-center">
+<button class="text-primary font-medium text-sm hover:underline hover:text-blue-700 transition-colors">
+                Show more activity
+            </button>
+</div>
+
+<!-- FAB -->
+<div class="fixed bottom-6 right-6 z-50">
+<button class="flex items-center justify-center w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-blue-700 hover:shadow-primary/50 transition-all active:scale-90">
+<span class="material-symbols-outlined text-[28px]">add_circle</span>
+</button>
+</div>
+</main>
+
+<!-- Bottom spacing for mobile ease of use -->
+<div class="h-20 w-full bg-transparent"></div>
+
+<script>
+    let ws = null;
+    let activities = [];
+    
+    function goBack() {
+        window.history.back();
+    }
+    
+    function connect() {
+        try {
+            ws = new WebSocket('ws://localhost:3002');
+            
+            ws.onopen = () => {
+                console.log('Activity Feed: Connected to TerminalWON Hub');
+                
+                // Send authentication
+                send('auth', {
+                    tool: 'mobile-pwa-activity',
+                    platform: 'browser',
+                    apiKey: 'test-key-123'
+                });
+            };
+            
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                handleMessage(message);
+            };
+            
+            ws.onclose = () => {
+                console.log('Activity Feed: Disconnected from hub');
+                updateConnectionStatus(false);
+                setTimeout(connect, 5000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('Activity Feed WebSocket error:', error);
+                updateConnectionStatus(false);
+            };
+            
+        } catch (error) {
+            console.error('Activity Feed connection failed:', error);
+            updateConnectionStatus(false);
+            setTimeout(connect, 5000);
+        }
+    }
+    
+    function send(type, payload) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type,
+                payload,
+                timestamp: new Date(),
+                messageId: `activity-${Date.now()}`
+            }));
+        }
+    }
+    
+    function handleMessage(message) {
+        console.log('Activity Feed received:', message.type, message);
+        
+        switch (message.type) {
+            case 'auth.success':
+                console.log('Authentication successful');
+                updateConnectionStatus(true);
+                break;
+                
+            case 'terminal.register':
+                addActivity({
+                    type: 'terminal_connected',
+                    terminal: message.payload,
+                    timestamp: new Date()
+                });
+                break;
+                
+            case 'terminal.output':
+                addActivity({
+                    type: 'terminal_output',
+                    terminalId: message.payload.terminalId,
+                    content: message.payload.content,
+                    timestamp: new Date()
+                });
+                break;
+                
+            case 'terminal.execute':
+                addActivity({
+                    type: 'command_executed',
+                    terminalId: message.payload.terminalId,
+                    command: message.payload.command,
+                    timestamp: new Date()
+                });
+                break;
+                
+            case 'message':
+                // Generic message, could be various types
+                if (message.payload) {
+                    addActivity({
+                        type: 'message',
+                        payload: message.payload,
+                        timestamp: new Date()
+                    });
+                }
+                break;
+        }
+    }
+    
+    function addActivity(activity) {
+        activities.unshift(activity); // Add to beginning
+        if (activities.length > 50) {
+            activities = activities.slice(0, 50); // Keep last 50
+        }
+        renderActivities();
+    }
+    
+    function renderActivities() {
+        const feedContainer = document.querySelector('.flex.flex-col');
+        if (!feedContainer) return;
+        
+        // Remove "New activity detected" banner
+        const banner = feedContainer.querySelector('.flex.justify-center');
+        if (banner) banner.remove();
+        
+        if (activities.length === 0) {
+            feedContainer.innerHTML = `
+                <div class="text-center py-12">
+                    <span class="material-symbols-outlined text-6xl text-slate-400 mb-4 block">notifications_none</span>
+                    <p class="text-slate-600 dark:text-slate-400 font-bold mb-2">No Activity Yet</p>
+                    <p class="text-sm text-slate-500">Activity will appear here when terminals are active</p>
+                </div>
+            `;
+            return;
+        }
+        
+        feedContainer.innerHTML = activities.map(activity => createActivityCard(activity)).join('');
+    }
+    
+    function createActivityCard(activity) {
+        const timeAgo = getTimeAgo(activity.timestamp);
+        
+        switch (activity.type) {
+            case 'terminal_connected':
+                return `
+                    <article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors">
+                        <div class="shrink-0">
+                            <div class="h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-green-600">terminal</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-white">Terminal Connected</span>
+                                    <span class="text-slate-500 dark:text-slate-400 text-sm">· ${timeAgo}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
+                                    <span class="material-symbols-outlined text-[14px] mr-1">dns</span>
+                                    ${activity.terminal.name}
+                                </span>
+                                <span class="inline-flex items-center rounded-md bg-green-50 dark:bg-green-900/20 px-2 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">
+                                    ${activity.terminal.tool}
+                                </span>
+                            </div>
+                            <p class="text-slate-800 dark:text-slate-200 text-sm">
+                                New terminal connected from ${activity.terminal.tool}
+                            </p>
+                        </div>
+                    </article>
+                `;
+                
+            case 'command_executed':
+                return `
+                    <article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors">
+                        <div class="shrink-0">
+                            <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-blue-600">code</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-white">Command Executed</span>
+                                    <span class="text-slate-500 dark:text-slate-400 text-sm">· ${timeAgo}</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-100 dark:bg-[#0d1117] rounded-lg p-3 mb-2 border border-border-light dark:border-slate-800">
+                                <code class="font-mono text-xs text-slate-700 dark:text-slate-300 break-all">
+                                    <span class="text-primary font-bold">➜</span> ${escapeHtml(activity.command)}
+                                </code>
+                            </div>
+                        </div>
+                    </article>
+                `;
+                
+            case 'terminal_output':
+                return `
+                    <article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors">
+                        <div class="shrink-0">
+                            <div class="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-gray-600">description</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-white">Terminal Output</span>
+                                    <span class="text-slate-500 dark:text-slate-400 text-sm">· ${timeAgo}</span>
+                                </div>
+                            </div>
+                            <div class="bg-slate-100 dark:bg-[#0d1117] rounded-lg p-3 border border-border-light dark:border-slate-800">
+                                <code class="font-mono text-xs text-slate-700 dark:text-slate-300 break-all">
+                                    ${escapeHtml(activity.content.substring(0, 200))}${activity.content.length > 200 ? '...' : ''}
+                                </code>
+                            </div>
+                        </div>
+                    </article>
+                `;
+                
+            default:
+                return `
+                    <article class="flex gap-4 p-4 border-b border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors">
+                        <div class="shrink-0">
+                            <div class="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-purple-600">info</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-white">Activity</span>
+                                    <span class="text-slate-500 dark:text-slate-400 text-sm">· ${timeAgo}</span>
+                                </div>
+                            </div>
+                            <p class="text-slate-800 dark:text-slate-200 text-sm">
+                                ${activity.type}
+                            </p>
+                        </div>
+                    </article>
+                `;
+        }
+    }
+    
+    function updateConnectionStatus(connected) {
+        // Could update UI to show connection status
+        console.log('Connection status:', connected ? 'Connected' : 'Disconnected');
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function getTimeAgo(date) {
+        const now = new Date();
+        const then = new Date(date);
+        const diff = Math.floor((now - then) / 1000);
+        
+        if (diff < 60) return `${diff}s ago`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+    }
+    
+    // Auto-connect on page load
+    window.onload = () => {
+        setTimeout(connect, 500);
+        renderActivities(); // Show empty state initially
+    };
+</script>
+</body>
+</html>

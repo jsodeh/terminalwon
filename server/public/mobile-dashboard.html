@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TerminalWON Dashboard</title>
+<meta name="theme-color" content="#f9f506">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TerminalWON">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9f506",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#23220f",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#2c2b18",
+                        "text-main": "#181811",
+                        "text-light": "#f2f2f2",
+                        "muted": "#8c8b5f",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass-panel {
+            background: rgba(35, 34, 15, 0.85);
+        }
+        
+        .terminal-gradient {
+            background: linear-gradient(to bottom, transparent 60%, #1e1e1e 100%);
+        }
+        
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-text-light transition-colors duration-200">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto shadow-2xl pb-24">
+<!-- Top Bar (Sticky) -->
+<header class="sticky top-0 z-40 glass-panel border-b border-gray-100 dark:border-white/10 px-4 py-3 flex items-center justify-between transition-all">
+<div class="flex items-center gap-2">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-black">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">TerminalWON</h1>
+</div>
+<div class="flex items-center gap-3">
+<button class="relative p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+<span id="notification-badge" class="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white dark:border-[#23220f] hidden"></span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-white dark:border-white/20 shadow-sm cursor-pointer">
+<img alt="User Avatar" class="h-full w-full object-cover" src="https://via.placeholder.com/40"/>
+</div>
+</div>
+</header>
+
+<!-- Search Bar -->
+<div class="px-4 py-4">
+<label class="flex flex-col h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-full h-full shadow-sm bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-white/5 overflow-hidden transition-all focus-within:ring-2 focus-within:ring-primary/50">
+<div class="text-muted flex items-center justify-center pl-4 pr-2">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none bg-transparent border-none text-base font-normal leading-normal placeholder:text-muted focus:outline-none text-text-main dark:text-text-light" placeholder="Search terminals, agents..." value=""/>
+</div>
+</label>
+</div>
+
+<!-- Welcome & Quick Stats -->
+<div class="px-4 pb-2">
+<h2 class="text-2xl font-bold leading-tight mb-4">Good Morning, Dev.</h2>
+<!-- Horizontal Scroll Stats -->
+<div class="flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x">
+<!-- Stat 1 -->
+<div class="snap-start shrink-0 min-w-[140px] flex flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-[24px]">dns</span>
+<span class="text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+20%</span>
+</div>
+<p class="text-muted text-sm font-medium mt-2">Active Terminals</p>
+<p id="terminal-count" class="text-3xl font-bold tracking-tight">0</p>
+</div>
+<!-- Stat 2 - Hidden for now, will show when agents are implemented -->
+<div class="snap-start shrink-0 min-w-[140px] flex flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 hidden">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-blue-500 text-[24px]">smart_toy</span>
+<span class="text-xs font-bold text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">+5%</span>
+</div>
+<p class="text-muted text-sm font-medium mt-2">Total Agents</p>
+<p class="text-3xl font-bold tracking-tight">12</p>
+</div>
+<!-- Stat 3 -->
+<div class="snap-start shrink-0 min-w-[140px] flex flex-col gap-1 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-red-500 text-[24px]">warning</span>
+<span class="text-xs font-bold text-muted bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-full">0%</span>
+</div>
+<p class="text-muted text-sm font-medium mt-2">Errors</p>
+<p class="text-3xl font-bold tracking-tight">0</p>
+</div>
+</div>
+</div>
+
+<!-- Quick Access: AI Chats -->
+<div class="px-4 pt-4">
+<a href="mobile-ai-sessions.html" class="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99]">
+<div class="flex items-center justify-center size-12 rounded-xl bg-white/20 backdrop-blur">
+<span class="material-symbols-outlined text-2xl">smart_toy</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-lg">AI Conversations</h3>
+<p class="text-sm text-white/80">View your Kiro & Cursor chats</p>
+</div>
+<span class="material-symbols-outlined text-white/60">chevron_right</span>
+</a>
+</div>
+
+<!-- Main Content: Active Terminals -->
+<div class="flex flex-col px-4 pt-4 gap-4">
+<div class="flex items-center justify-between mb-1">
+<h3 class="text-lg font-bold">Active Terminals</h3>
+<div class="flex items-center gap-2">
+<button onclick="createNewTerminal()" class="flex items-center gap-1 px-3 py-1.5 bg-primary text-black rounded-full text-sm font-bold hover:brightness-95 transition-all">
+<span class="material-symbols-outlined text-[16px]">add</span>
+New
+</button>
+<button class="text-sm font-medium text-muted hover:text-primary transition-colors" onclick="requestTerminals()">Refresh</button>
+</div>
+</div>
+
+<!-- Terminals Container - Will be populated dynamically -->
+<div id="terminals-container">
+<!-- Loading state -->
+<div class="text-center py-12">
+<div class="animate-spin h-12 w-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+<p class="text-muted">Connecting to TerminalWON Hub...</p>
+</div>
+</div>
+</div>
+
+<!-- Floating Action Button -->
+<button onclick="window.location.href='/connect'" class="fixed bottom-24 right-4 z-50 h-14 w-14 rounded-full bg-primary shadow-lg shadow-primary/40 flex items-center justify-center text-black hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-lg border-t border-gray-200 dark:border-white/10 pb-6 pt-2 z-40 max-w-md mx-auto right-0">
+<div class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 p-2 text-text-main dark:text-primary" href="mobile-dashboard.html">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-muted hover:text-text-main dark:hover:text-white transition-colors" href="mobile-terminal-detail.html">
+<div class="relative">
+<span class="material-symbols-outlined">terminal</span>
+<span id="terminal-badge" class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-black hidden">0</span>
+</div>
+<span class="text-[10px] font-medium">Terminals</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-muted hover:text-text-main dark:hover:text-white transition-colors" href="mobile-ai-sessions.html">
+<span class="material-symbols-outlined">smart_toy</span>
+<span class="text-[10px] font-medium">AI Chat</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-muted hover:text-text-main dark:hover:text-white transition-colors" href="mobile-activity-feed.html">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-[10px] font-medium">Activity</span>
+</a>
+</div>
+</nav>
+</div>
+
+<script>
+    let ws = null;
+    let terminals = [];
+    let connectionStatus = 'disconnected';
+    let loadingTimeout = null;
+
+    function connect() {
+        try {
+            updateConnectionStatus('connecting');
+            
+            // Set loading timeout - if no response in 3 seconds, show error
+            loadingTimeout = setTimeout(() => {
+                if (terminals.length === 0) {
+                    const container = document.getElementById('terminals-container');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="text-center py-12">
+                                <span class="material-symbols-outlined text-6xl mb-4 block text-yellow-500">warning</span>
+                                <p class="text-text-main dark:text-text-light font-bold mb-2">Connection Slow</p>
+                                <p class="text-sm text-muted mb-4">Taking longer than expected to load terminals...</p>
+                                <button onclick="location.reload()" class="px-4 py-2 bg-primary text-black rounded-full font-bold hover:brightness-95 transition-all">
+                                    Retry
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+            }, 3000);
+            
+            ws = new WebSocket('ws://localhost:3002');
+            
+            ws.onopen = () => {
+                console.log('Connected to TerminalWON Hub');
+                updateConnectionStatus('connected');
+                
+                // Send authentication
+                send('auth', {
+                    tool: 'mobile-pwa',
+                    platform: 'browser',
+                    apiKey: 'test-key-123'
+                });
+                
+                // Request terminal list
+                setTimeout(() => requestTerminals(), 100);
+                
+                // Poll for updates every 3 seconds (reduced from 5)
+                setInterval(() => {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        requestTerminals();
+                    }
+                }, 3000);
+            };
+            
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                handleMessage(message);
+            };
+            
+            ws.onclose = () => {
+                console.log('Disconnected from hub');
+                updateConnectionStatus('disconnected');
+                setTimeout(connect, 5000); // Reconnect after 5s
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus('error');
+            };
+            
+        } catch (error) {
+            console.error('Connection failed:', error);
+            updateConnectionStatus('error');
+            setTimeout(connect, 5000);
+        }
+    }
+
+    function updateConnectionStatus(status) {
+        connectionStatus = status;
+        const badge = document.getElementById('notification-badge');
+        if (badge) {
+            if (status === 'connected') {
+                badge.classList.add('hidden');
+            } else {
+                badge.classList.remove('hidden');
+            }
+        }
+    }
+
+    function send(type, payload) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type,
+                payload,
+                timestamp: new Date(),
+                messageId: `mobile-${Date.now()}`
+            }));
+        }
+    }
+
+    function requestTerminals() {
+        const messageId = `list-${Date.now()}`;
+        send('terminals.list', { messageId });
+    }
+
+    function handleMessage(message) {
+        console.log('Received:', message.type, message);
+        
+        switch (message.type) {
+            case 'welcome':
+                console.log('Welcome message received');
+                break;
+                
+            case 'auth.success':
+                console.log('Authentication successful');
+                requestTerminals();
+                break;
+                
+            case 'message':
+                if (message.payload && message.payload.terminals) {
+                    updateTerminals(message.payload.terminals);
+                }
+                break;
+                
+            case 'terminal.register':
+                console.log('New terminal registered:', message.payload);
+                setTimeout(() => requestTerminals(), 500);
+                break;
+                
+            case 'terminal.output':
+                console.log('Terminal output received:', message.payload);
+                updateTerminalOutput(message.payload);
+                break;
+                
+            case 'terminal.created':
+                console.log('New PTY terminal created:', message.payload);
+                // Navigate to the new terminal
+                window.location.href = `/terminal/${message.payload.id}`;
+                break;
+                
+            case 'terminal.create.error':
+                console.error('Failed to create terminal:', message.payload.error);
+                alert('Failed to create terminal: ' + message.payload.error);
+                break;
+                
+            case 'terminal.new':
+                console.log('New terminal available:', message.payload);
+                setTimeout(() => requestTerminals(), 500);
+                break;
+        }
+    }
+    
+    function createNewTerminal() {
+        const name = prompt('Terminal name (optional):', 'Mobile Terminal');
+        if (name !== null) {
+            send('terminal.create', {
+                name: name || 'Mobile Terminal'
+            });
+        }
+    }
+
+    function updateTerminals(terminalList) {
+        terminals = terminalList;
+        console.log('Updating terminals:', terminalList);
+        
+        // Clear loading timeout since we got data
+        if (loadingTimeout) {
+            clearTimeout(loadingTimeout);
+            loadingTimeout = null;
+        }
+        
+        // Update counts
+        const activeCount = terminalList.length;
+        document.getElementById('terminal-count').textContent = activeCount;
+        const badge = document.getElementById('terminal-badge');
+        badge.textContent = activeCount;
+        // Show badge only if there are terminals
+        if (activeCount > 0) {
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+        
+        // Update terminal cards container
+        const container = document.getElementById('terminals-container');
+        
+        if (terminalList.length === 0) {
+            // Show empty state
+            container.innerHTML = `
+                <div class="text-center py-12">
+                    <span class="material-symbols-outlined text-6xl mb-4 block text-muted">terminal</span>
+                    <p class="text-text-main dark:text-text-light font-bold mb-2">No Active Terminals</p>
+                    <p class="text-sm text-muted mb-4">Connect your IDE extensions or CLI tools to see terminals here</p>
+                    <button onclick="showConnectInstructions()" class="px-4 py-2 bg-primary text-black rounded-full font-bold hover:brightness-95 transition-all">
+                        Connect Terminal
+                    </button>
+                </div>
+            `;
+        } else {
+            // Show real terminal cards
+            container.innerHTML = terminalList.map(terminal => createTerminalCard(terminal)).join('');
+        }
+    }
+
+    function createTerminalCard(terminal) {
+        const statusColor = terminal.status === 'active' ? 'green' : terminal.status === 'idle' ? 'yellow' : 'blue';
+        const toolIcon = getToolIcon(terminal.tool);
+        const isPulsing = terminal.status === 'active' ? 'animate-pulse' : '';
+        const isStreaming = terminal.streaming === true;
+        const streamingBadge = isStreaming ? '<span class="ml-2 text-xs font-bold text-red-500 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">🔴 LIVE</span>' : '';
+        
+        return `
+            <div onclick="window.location.href='/terminal/${terminal.id}'" class="group relative flex flex-col gap-3 rounded-2xl p-4 bg-surface-light dark:bg-surface-dark shadow-sm border border-gray-100 dark:border-white/5 transition-transform hover:scale-[1.01] active:scale-[0.99] mb-4 cursor-pointer">
+                <!-- Header -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-full bg-[#f0f0f0] dark:bg-white/10 flex items-center justify-center">
+                            <span class="text-2xl">${toolIcon}</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center">
+                                <h4 class="font-bold text-base leading-none">${terminal.name || 'Terminal'}</h4>
+                                ${streamingBadge}
+                            </div>
+                            <p class="text-xs text-muted mt-1">${terminal.tool} • ${terminal.status}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="h-2.5 w-2.5 rounded-full bg-${statusColor}-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] ${isPulsing}"></div>
+                        <button onclick="event.stopPropagation(); showTerminalMenu('${terminal.id}')" class="text-muted hover:text-text-main">
+                            <span class="material-symbols-outlined">more_vert</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Terminal Preview -->
+                <div class="bg-[#1e1e1e] rounded-xl p-3 font-mono text-xs text-gray-300 relative overflow-hidden h-28 border border-black/10">
+                    <div id="terminal-preview-${terminal.id}" class="opacity-70 leading-relaxed">
+                        ${isStreaming ? 
+                            '<span class="text-red-400">🔴 LIVE</span> <span class="text-green-400">➜</span> <span class="text-blue-400">~/' + (terminal.cwd || 'workspace') + '</span><br/>Real-time streaming enabled<br/><span class="text-gray-500">Last activity: ' + getTimeAgo(terminal.lastActivity) + '</span>' :
+                            '<span class="text-green-400">➜</span> <span class="text-blue-400">~/' + (terminal.cwd || 'workspace') + '</span><br/>Connected and monitoring...<br/><span class="text-gray-500">Last activity: ' + getTimeAgo(terminal.lastActivity) + '</span>'
+                        }
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none"></div>
+                </div>
+                
+                <!-- Footer Actions -->
+                <div class="flex items-center justify-between mt-1">
+                    <span class="text-xs text-muted font-mono">ID: ${terminal.id.substring(0, 8)}...</span>
+                    <div class="flex gap-2">
+                        <button onclick="event.stopPropagation(); viewTerminal('${terminal.id}')" class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 text-text-main">
+                            <span class="material-symbols-outlined text-[18px]">visibility</span>
+                        </button>
+                        <button onclick="event.stopPropagation(); shareTerminal('${terminal.id}')" class="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 hover:bg-primary hover:text-black text-text-main">
+                            <span class="material-symbols-outlined text-[18px]">share</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateTerminalOutput(payload) {
+        const previewEl = document.getElementById(`terminal-preview-${payload.terminalId}`);
+        if (previewEl && payload.content) {
+            // Update the preview with latest output
+            const lines = payload.content.split('\n').slice(-3).join('<br/>');
+            previewEl.innerHTML = `<span class="text-gray-300">${lines}</span>`;
+        }
+    }
+
+    function viewTerminal(terminalId) {
+        window.location.href = `/terminal/${terminalId}`;
+    }
+
+    function shareTerminal(terminalId) {
+        send('terminal.share', { terminalId, shared: true });
+        alert('Terminal shared! Others can now view this terminal.');
+    }
+
+    function showTerminalMenu(terminalId) {
+        // TODO: Show context menu
+        console.log('Show menu for terminal:', terminalId);
+    }
+
+    function showConnectInstructions() {
+        alert(`To connect terminals:
+
+1. Install IDE Extension:
+   - VSCode/Cursor: Install from extensions/vscode/
+   - Kiro: Install from extensions/kiro/
+
+2. Use CLI Tool:
+   - Run: terminalwon connect
+   - Or: terminalwon monitor
+
+3. The terminal will appear here automatically!`);
+    }
+
+    function getToolIcon(tool) {
+        const icons = {
+            'kiro': '🎯',
+            'vscode': '💙',
+            'cursor': '🤖',
+            'cli': '⚡',
+            'web-dashboard': '🌐',
+            'mobile-pwa': '📱'
+        };
+        return icons[tool] || '🖥️';
+    }
+
+    function getTimeAgo(date) {
+        if (!date) return 'just now';
+        const now = new Date();
+        const then = new Date(date);
+        const diff = Math.floor((now - then) / 1000);
+        
+        if (diff < 60) return `${diff}s ago`;
+        if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+        return `${Math.floor(diff / 86400)}d ago`;
+    }
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('SW registered'))
+                .catch(error => console.log('SW registration failed:', error));
+        });
+    }
+
+    // Auto-connect on page load
+    window.onload = () => {
+        setTimeout(connect, 100); // Reduced from 500ms
+    };
+</script>
+</body>
+</html>

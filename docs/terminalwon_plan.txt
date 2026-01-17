@@ -1,0 +1,935 @@
+# TerminalWON - Detailed Implementation Plan
+
+## Repository Structure
+
+```
+terminalwon/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── lerna.json / pnpm-workspace.yaml
+├── package.json
+│
+├── packages/
+│   ├── shared/
+│   │   ├── types/              # Shared TypeScript types
+│   │   ├── protocol/           # Communication protocol definitions
+│   │   ├── utils/              # Shared utilities
+│   │   └── constants/          # Shared constants
+│   │
+│   ├── hub-backend/            # TerminalWON Hub Backend
+│   │   ├── src/
+│   │   │   ├── api/            # REST API endpoints
+│   │   │   ├── websocket/      # WebSocket server
+│   │   │   ├── auth/           # Authentication & authorization
+│   │   │   ├── database/       # Database models & migrations
+│   │   │   ├── notifications/  # Push notification service
+│   │   │   └── services/       # Business logic
+│   │   ├── tests/
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   │
+│   ├── hub-web/                # TerminalWON Hub Web App
+│   │   ├── src/
+│   │   │   ├── components/     # React components
+│   │   │   ├── pages/          # Page components
+│   │   │   ├── hooks/          # Custom React hooks
+│   │   │   ├── store/          # State management (Zustand/Redux)
+│   │   │   ├── api/            # API client
+│   │   │   └── styles/         # Global styles
+│   │   ├── public/
+│   │   ├── package.json
+│   │   └── vite.config.ts
+│   │
+│   ├── extension-vscode/       # VSCode Extension
+│   │   ├── src/
+│   │   │   ├── extension.ts    # Entry point
+│   │   │   ├── terminal/       # Terminal monitoring
+│   │   │   ├── connection/     # Hub connection logic
+│   │   │   ├── commands/       # VSCode commands
+│   │   │   └── ui/             # Webview UI
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── .vscodeignore
+│   │
+│   ├── extension-cursor/       # Cursor Extension
+│   │   ├── src/
+│   │   │   ├── extension.ts
+│   │   │   ├── terminal/
+│   │   │   ├── connection/
+│   │   │   ├── ai-integration/ # Cursor-specific AI features
+│   │   │   └── commands/
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   │
+│   └── mobile/                 # React Native Mobile App (Future)
+│       ├── ios/
+│       ├── android/
+│       └── src/
+│
+├── docs/
+│   ├── architecture.md
+│   ├── api-reference.md
+│   ├── extension-dev-guide.md
+│   ├── security.md
+│   └── deployment.md
+│
+└── scripts/
+    ├── setup.sh
+    ├── build-all.sh
+    └── deploy.sh
+```
+
+---
+
+## Phase 1: Foundation (Weeks 1-3)
+
+### Week 1: Project Setup & Shared Infrastructure
+
+**Goal:** Set up monorepo and shared packages
+
+**Tasks:**
+1. Initialize monorepo with pnpm workspaces
+2. Set up TypeScript configuration
+3. Configure ESLint, Prettier
+4. Set up CI/CD pipeline (GitHub Actions)
+
+**Deliverables:**
+- Working monorepo structure
+- Shared types package
+- Build and lint scripts
+
+**Code to Write:**
+
+```typescript
+// packages/shared/types/src/index.ts
+export interface Terminal {
+  id: string;
+  sessionId: string;
+  name: string;
+  cwd: string;
+  tool: 'vscode' | 'cursor' | 'claude-code' | 'other';
+  status: 'active' | 'idle' | 'waiting-input' | 'error';
+  createdAt: Date;
+  lastActivity: Date;
+}
+
+export interface TerminalOutput {
+  terminalId: string;
+  content: string;
+  timestamp: Date;
+  type: 'stdout' | 'stderr' | 'system';
+}
+
+export interface Command {
+  id: string;
+  terminalId: string;
+  command: string;
+  timestamp: Date;
+  executedBy: string;
+  status: 'pending' | 'executing' | 'completed' | 'failed';
+}
+
+export interface AIConversation {
+  id: string;
+  terminalId: string;
+  messages: AIMessage[];
+  tool: string;
+  context: Record<string, any>;
+}
+
+export interface AIMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+}
+
+// WebSocket Protocol
+export enum WSEventType {
+  // Extension -> Hub
+  TERMINAL_CREATED = 'terminal.created',
+  TERMINAL_OUTPUT = 'terminal.output',
+  TERMINAL_CLOSED = 'terminal.closed',
+  INPUT_REQUIRED = 'terminal.input_required',
+  AI_MESSAGE = 'ai.message',
+  
+  // Hub -> Extension
+  EXECUTE_COMMAND = 'command.execute',
+  SEND_INPUT = 'command.input',
+  KILL_PROCESS = 'command.kill',
+  
+  // Bidirectional
+  PING = 'ping',
+  PONG = 'pong',
+  AUTH = 'auth',
+  ERROR = 'error',
+}
+
+export interface WSMessage<T = any> {
+  type: WSEventType;
+  payload: T;
+  timestamp: Date;
+  messageId: string;
+}
+```
+
+```typescript
+// packages/shared/protocol/src/index.ts
+export class TerminalWONProtocol {
+  static createMessage<T>(type: WSEventType, payload: T): WSMessage<T> {
+    return {
+      type,
+      payload,
+      timestamp: new Date(),
+      messageId: crypto.randomUUID(),
+    };
+  }
+
+  static validateMessage(message: any): message is WSMessage {
+    return (
+      message &&
+      typeof message.type === 'string' &&
+      message.payload !== undefined &&
+      message.timestamp &&
+      message.messageId
+    );
+  }
+}
+```
+
+---
+
+### Week 2: Hub Backend - Core Infrastructure
+
+**Goal:** Build WebSocket server and authentication
+
+**Tasks:**
+1. Set up Node.js + Express server
+2. Implement WebSocket server (ws or socket.io)
+3. Set up PostgreSQL database with Prisma
+4. Implement JWT authentication
+5. Create basic API endpoints
+
+**Tech Stack:**
+- Node.js + Express
+- WebSocket (ws library)
+- Prisma ORM
+- PostgreSQL
+- Redis (for session management)
+- JWT for auth
+
+**Deliverables:**
+- Running backend server
+- WebSocket connection handling
+- User authentication system
+- Database schema
+
+**Database Schema:**
+
+```prisma
+// packages/hub-backend/prisma/schema.prisma
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  passwordHash  String
+  name          String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  sessions      Session[]
+  terminals     Terminal[]
+  teams         TeamMember[]
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  token        String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model Terminal {
+  id           String        @id @default(uuid())
+  userId       String
+  name         String
+  tool         String
+  cwd          String
+  status       TerminalStatus
+  createdAt    DateTime      @default(now())
+  lastActivity DateTime      @updatedAt
+  
+  user         User          @relation(fields: [userId], references: [id])
+  outputs      TerminalOutput[]
+  commands     Command[]
+  aiConversation AIConversation?
+}
+
+enum TerminalStatus {
+  ACTIVE
+  IDLE
+  WAITING_INPUT
+  ERROR
+  CLOSED
+}
+
+model TerminalOutput {
+  id          String   @id @default(uuid())
+  terminalId  String
+  content     String   @db.Text
+  type        String
+  timestamp   DateTime @default(now())
+  
+  terminal    Terminal @relation(fields: [terminalId], references: [id], onDelete: Cascade)
+}
+
+model Command {
+  id          String   @id @default(uuid())
+  terminalId  String
+  command     String
+  executedBy  String
+  status      CommandStatus
+  timestamp   DateTime @default(now())
+  
+  terminal    Terminal @relation(fields: [terminalId], references: [id])
+}
+
+enum CommandStatus {
+  PENDING
+  EXECUTING
+  COMPLETED
+  FAILED
+}
+
+model AIConversation {
+  id          String   @id @default(uuid())
+  terminalId  String   @unique
+  tool        String
+  context     Json
+  createdAt   DateTime @default(now())
+  
+  terminal    Terminal @relation(fields: [terminalId], references: [id])
+  messages    AIMessage[]
+}
+
+model AIMessage {
+  id               String         @id @default(uuid())
+  conversationId   String
+  role             String
+  content          String         @db.Text
+  timestamp        DateTime       @default(now())
+  
+  conversation     AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Team {
+  id          String       @id @default(uuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  
+  members     TeamMember[]
+}
+
+model TeamMember {
+  id          String   @id @default(uuid())
+  teamId      String
+  userId      String
+  role        TeamRole
+  joinedAt    DateTime @default(now())
+  
+  team        Team     @relation(fields: [teamId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  
+  @@unique([teamId, userId])
+}
+
+enum TeamRole {
+  ADMIN
+  MEMBER
+  VIEWER
+}
+```
+
+**Backend Core Files:**
+
+```typescript
+// packages/hub-backend/src/websocket/WebSocketServer.ts
+import WebSocket from 'ws';
+import { WSEventType, WSMessage } from '@terminalwon/shared-types';
+
+export class TerminalWONWebSocketServer {
+  private wss: WebSocket.Server;
+  private clients: Map<string, WebSocket> = new Map();
+
+  constructor(port: number) {
+    this.wss = new WebSocket.Server({ port });
+    this.setupServer();
+  }
+
+  private setupServer() {
+    this.wss.on('connection', (ws: WebSocket, req) => {
+      console.log('New connection');
+      
+      ws.on('message', (data: string) => {
+        this.handleMessage(ws, data);
+      });
+
+      ws.on('close', () => {
+        this.handleDisconnect(ws);
+      });
+    });
+  }
+
+  private async handleMessage(ws: WebSocket, data: string) {
+    try {
+      const message: WSMessage = JSON.parse(data);
+      
+      switch (message.type) {
+        case WSEventType.AUTH:
+          await this.handleAuth(ws, message);
+          break;
+        case WSEventType.TERMINAL_CREATED:
+          await this.handleTerminalCreated(message);
+          break;
+        case WSEventType.TERMINAL_OUTPUT:
+          await this.handleTerminalOutput(message);
+          break;
+        // ... other handlers
+      }
+    } catch (error) {
+      console.error('Error handling message:', error);
+    }
+  }
+
+  private async handleAuth(ws: WebSocket, message: WSMessage) {
+    // Validate JWT token
+    // Associate connection with user
+    // Store in clients map
+  }
+
+  private handleDisconnect(ws: WebSocket) {
+    // Clean up client connection
+  }
+
+  public sendToClient(userId: string, message: WSMessage) {
+    const client = this.clients.get(userId);
+    if (client && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(message));
+    }
+  }
+}
+```
+
+---
+
+### Week 3: VSCode Extension - Basic Implementation
+
+**Goal:** Create working VSCode extension that streams terminal output
+
+**Tasks:**
+1. Set up VSCode extension boilerplate
+2. Implement terminal detection and monitoring
+3. Create WebSocket connection to Hub
+4. Stream terminal output
+5. Handle authentication
+
+**Tech Stack:**
+- TypeScript
+- VSCode Extension API
+- WebSocket client
+
+**Deliverables:**
+- Installable VSCode extension
+- Terminal output streaming to Hub
+- Basic authentication flow
+
+**Extension Core Files:**
+
+```typescript
+// packages/extension-vscode/src/extension.ts
+import * as vscode from 'vscode';
+import { TerminalMonitor } from './terminal/TerminalMonitor';
+import { HubConnection } from './connection/HubConnection';
+
+export function activate(context: vscode.ExtensionContext) {
+  console.log('TerminalWON extension activated');
+
+  const hubConnection = new HubConnection(context);
+  const terminalMonitor = new TerminalMonitor(hubConnection);
+
+  // Register commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand('terminalwon.connect', async () => {
+      await hubConnection.connect();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('terminalwon.disconnect', () => {
+      hubConnection.disconnect();
+    })
+  );
+
+  // Start monitoring terminals
+  terminalMonitor.start();
+}
+
+export function deactivate() {
+  console.log('TerminalWON extension deactivated');
+}
+```
+
+```typescript
+// packages/extension-vscode/src/terminal/TerminalMonitor.ts
+import * as vscode from 'vscode';
+import { HubConnection } from '../connection/HubConnection';
+import { WSEventType, Terminal } from '@terminalwon/shared-types';
+
+export class TerminalMonitor {
+  private terminals: Map<string, vscode.Terminal> = new Map();
+
+  constructor(private hubConnection: HubConnection) {}
+
+  start() {
+    // Monitor existing terminals
+    vscode.window.terminals.forEach(terminal => {
+      this.monitorTerminal(terminal);
+    });
+
+    // Monitor new terminals
+    vscode.window.onDidOpenTerminal(terminal => {
+      this.monitorTerminal(terminal);
+    });
+
+    // Clean up closed terminals
+    vscode.window.onDidCloseTerminal(terminal => {
+      this.handleTerminalClosed(terminal);
+    });
+  }
+
+  private monitorTerminal(terminal: vscode.Terminal) {
+    const terminalId = this.generateTerminalId(terminal);
+    this.terminals.set(terminalId, terminal);
+
+    // Notify hub of new terminal
+    this.hubConnection.send({
+      type: WSEventType.TERMINAL_CREATED,
+      payload: {
+        id: terminalId,
+        name: terminal.name,
+        tool: 'vscode',
+        cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
+      },
+      timestamp: new Date(),
+      messageId: crypto.randomUUID(),
+    });
+
+    // Use writeEmitter to capture output (VSCode API limitation workaround)
+    this.setupOutputCapture(terminal, terminalId);
+  }
+
+  private setupOutputCapture(terminal: vscode.Terminal, terminalId: string) {
+    // VSCode doesn't provide direct terminal output access
+    // We need to use pseudo-terminal or shell integration
+    // This is a simplified version - real implementation needs more work
+    
+    const writeEmitter = new vscode.EventEmitter<string>();
+    
+    writeEmitter.event(data => {
+      this.hubConnection.send({
+        type: WSEventType.TERMINAL_OUTPUT,
+        payload: {
+          terminalId,
+          content: data,
+          type: 'stdout',
+        },
+        timestamp: new Date(),
+        messageId: crypto.randomUUID(),
+      });
+    });
+  }
+
+  private handleTerminalClosed(terminal: vscode.Terminal) {
+    const terminalId = this.findTerminalId(terminal);
+    if (terminalId) {
+      this.terminals.delete(terminalId);
+      this.hubConnection.send({
+        type: WSEventType.TERMINAL_CLOSED,
+        payload: { terminalId },
+        timestamp: new Date(),
+        messageId: crypto.randomUUID(),
+      });
+    }
+  }
+
+  private generateTerminalId(terminal: vscode.Terminal): string {
+    return `vscode-${terminal.name}-${Date.now()}`;
+  }
+
+  private findTerminalId(terminal: vscode.Terminal): string | undefined {
+    for (const [id, t] of this.terminals) {
+      if (t === terminal) return id;
+    }
+    return undefined;
+  }
+
+  public executeCommand(terminalId: string, command: string) {
+    const terminal = this.terminals.get(terminalId);
+    if (terminal) {
+      terminal.sendText(command);
+    }
+  }
+}
+```
+
+```typescript
+// packages/extension-vscode/src/connection/HubConnection.ts
+import * as vscode from 'vscode';
+import WebSocket from 'ws';
+import { WSMessage, WSEventType } from '@terminalwon/shared-types';
+
+export class HubConnection {
+  private ws?: WebSocket;
+  private hubUrl: string;
+  private token?: string;
+
+  constructor(private context: vscode.ExtensionContext) {
+    this.hubUrl = this.getHubUrl();
+    this.token = this.getStoredToken();
+  }
+
+  async connect() {
+    if (!this.token) {
+      await this.authenticate();
+    }
+
+    this.ws = new WebSocket(this.hubUrl);
+
+    this.ws.on('open', () => {
+      console.log('Connected to TerminalWON Hub');
+      this.authenticate();
+    });
+
+    this.ws.on('message', (data: string) => {
+      this.handleMessage(JSON.parse(data));
+    });
+
+    this.ws.on('close', () => {
+      console.log('Disconnected from Hub');
+      vscode.window.showWarningMessage('TerminalWON disconnected');
+    });
+
+    this.ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  }
+
+  disconnect() {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = undefined;
+    }
+  }
+
+  send(message: WSMessage) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(message));
+    }
+  }
+
+  private async authenticate() {
+    if (!this.token) {
+      // Show login webview
+      const token = await this.showLoginWebview();
+      this.token = token;
+      await this.context.globalState.update('terminalwon.token', token);
+    }
+
+    this.send({
+      type: WSEventType.AUTH,
+      payload: { token: this.token },
+      timestamp: new Date(),
+      messageId: crypto.randomUUID(),
+    });
+  }
+
+  private async showLoginWebview(): Promise<string> {
+    // Show webview for user to login
+    // Return JWT token
+    return '';
+  }
+
+  private handleMessage(message: WSMessage) {
+    switch (message.type) {
+      case WSEventType.EXECUTE_COMMAND:
+        // Handle command execution request
+        break;
+      case WSEventType.SEND_INPUT:
+        // Handle input request
+        break;
+    }
+  }
+
+  private getHubUrl(): string {
+    return vscode.workspace
+      .getConfiguration('terminalwon')
+      .get('hubUrl', 'ws://localhost:8080');
+  }
+
+  private getStoredToken(): string | undefined {
+    return this.context.globalState.get('terminalwon.token');
+  }
+}
+```
+
+```json
+// packages/extension-vscode/package.json
+{
+  "name": "terminalwon-vscode",
+  "displayName": "TerminalWON",
+  "description": "Remote terminal monitoring and control",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terminalwon.connect",
+        "title": "TerminalWON: Connect to Hub"
+      },
+      {
+        "command": "terminalwon.disconnect",
+        "title": "TerminalWON: Disconnect"
+      }
+    ],
+    "configuration": {
+      "title": "TerminalWON",
+      "properties": {
+        "terminalwon.hubUrl": {
+          "type": "string",
+          "default": "ws://localhost:8080",
+          "description": "TerminalWON Hub WebSocket URL"
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+## Phase 2: Core Features (Weeks 4-6)
+
+### Week 4: Hub Web App - Dashboard
+
+**Goal:** Build web interface for monitoring terminals
+
+**Tasks:**
+1. Set up React + Vite project
+2. Implement authentication UI
+3. Create terminal list view
+4. Build real-time terminal output viewer
+5. Add command execution interface
+
+**Tech Stack:**
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- Zustand (state management)
+- React Query (data fetching)
+
+**Deliverables:**
+- Working web dashboard
+- Real-time terminal monitoring
+- Command execution from web
+
+---
+
+### Week 5: Smart Notifications
+
+**Goal:** Implement intelligent notification system
+
+**Tasks:**
+1. Pattern detection for command completion
+2. Error detection and alerting
+3. Input required detection
+4. Push notification service (Firebase/OneSignal)
+5. Notification preferences UI
+
+---
+
+### Week 6: Cursor Extension
+
+**Goal:** Build Cursor extension with AI integration
+
+**Tasks:**
+1. Fork VSCode extension codebase
+2. Add Cursor-specific features
+3. Implement AI conversation capture
+4. Test AI context preservation
+
+---
+
+## Phase 3: AI & Polish (Weeks 7-9)
+
+### Week 7-8: AI Conversation Continuity
+
+**Goal:** Enable AI chat continuation from Hub
+
+**Tasks:**
+1. AI message capture in extensions
+2. Conversation storage in database
+3. Chat UI in web app
+4. Message synchronization
+
+---
+
+### Week 9: Polish & Testing
+
+**Goal:** Production-ready MVP
+
+**Tasks:**
+1. End-to-end testing
+2. Security audit
+3. Performance optimization
+4. Documentation
+5. Beta user testing
+
+---
+
+## Phase 4: Team Features (Weeks 10-12)
+
+### Week 10-11: Team Collaboration
+
+**Goal:** Multi-user terminal sharing
+
+**Tasks:**
+1. Team workspace creation
+2. Role-based access control
+3. Activity feed
+4. Audit logs
+
+---
+
+### Week 12: Mobile App (Optional for MVP)
+
+**Goal:** React Native mobile app
+
+**Tasks:**
+1. Set up React Native project
+2. Authentication flow
+3. Terminal list view
+4. Command execution interface
+5. Push notifications
+
+---
+
+## Tech Stack Summary
+
+### Backend
+- **Runtime:** Node.js 20+
+- **Framework:** Express
+- **WebSocket:** ws library
+- **Database:** PostgreSQL 15+
+- **ORM:** Prisma
+- **Cache:** Redis
+- **Auth:** JWT + bcrypt
+
+### Frontend (Web)
+- **Framework:** React 18
+- **Build Tool:** Vite
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **State:** Zustand
+- **Data Fetching:** React Query
+- **WebSocket:** native WebSocket API
+
+### Extensions
+- **Language:** TypeScript
+- **VSCode API:** Latest stable
+- **Cursor API:** VSCode-compatible
+
+### Mobile (Future)
+- **Framework:** React Native
+- **Navigation:** React Navigation
+- **State:** Zustand
+
+---
+
+## Development Setup
+
+```bash
+# Clone repo
+git clone https://github.com/yourusername/terminalwon.git
+cd terminalwon
+
+# Install dependencies
+pnpm install
+
+# Set up environment variables
+cp .env.example .env
+
+# Start database
+docker-compose up -d postgres redis
+
+# Run migrations
+cd packages/hub-backend
+pnpm prisma migrate dev
+
+# Start development servers
+pnpm dev # Runs all packages in watch mode
+```
+
+---
+
+## Deployment Strategy
+
+### Development
+- Backend: Local Docker containers
+- Web: Vite dev server
+- Extensions: VSCode Extension Host
+
+### Staging
+- Backend: Railway/Render
+- Web: Vercel
+- Database: Supabase/Neon
+
+### Production
+- Backend: AWS ECS / Google Cloud Run
+- Web: Vercel/Cloudflare Pages
+- Database: AWS RDS PostgreSQL
+- Cache: AWS ElastiCache Redis
+- CDN: CloudFlare
+
+---
+
+## Success Metrics
+
+### MVP Launch (Week 9)
+- 3 working extensions (VSCode, Cursor, Standalone CLI)
+- 100 beta users
+- < 100ms terminal output latency
+- 99.5% uptime
+
+### 3 Months Post-Launch
+- 1,000 active users
+- 10 paying team accounts
+- 5 additional IDE integrations
+
+---
+
+## Next Immediate Steps
+
+1. **Set up GitHub repo** with monorepo structure
+2. **Initialize packages** with basic configurations
+3. **Set up CI/CD** pipeline
+4. **Start Week 1 tasks** - shared types and protocol
+
+Ready to start building? Which part would you like to dive into first?

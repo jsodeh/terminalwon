@@ -1,0 +1,117 @@
+{
+  "name": "terminalwon-cursor",
+  "displayName": "TerminalWON for Cursor",
+  "description": "Remote terminal monitoring with AI integration for Cursor IDE",
+  "version": "1.0.0",
+  "publisher": "terminalwon",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "terminal",
+    "remote",
+    "monitoring",
+    "ai",
+    "cursor",
+    "collaboration"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terminalwon.connect",
+        "title": "TerminalWON: Connect to Hub"
+      },
+      {
+        "command": "terminalwon.disconnect",
+        "title": "TerminalWON: Disconnect from Hub"
+      },
+      {
+        "command": "terminalwon.shareTerminal",
+        "title": "TerminalWON: Share Current Terminal"
+      },
+      {
+        "command": "terminalwon.aiAnalyze",
+        "title": "TerminalWON: Analyze with AI"
+      },
+      {
+        "command": "terminalwon.aiSuggest",
+        "title": "TerminalWON: Get AI Suggestions"
+      }
+    ],
+    "configuration": {
+      "title": "TerminalWON",
+      "properties": {
+        "terminalwon.hubUrl": {
+          "type": "string",
+          "default": "wss://hub.terminalwon.com",
+          "description": "TerminalWON Hub WebSocket URL"
+        },
+        "terminalwon.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your TerminalWON API Key"
+        },
+        "terminalwon.aiProvider": {
+          "type": "string",
+          "enum": ["openai", "anthropic", "cursor"],
+          "default": "cursor",
+          "description": "AI provider for terminal analysis"
+        },
+        "terminalwon.autoAnalyze": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically analyze terminal output with AI"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "terminalwon",
+          "title": "TerminalWON",
+          "icon": "$(terminal)"
+        }
+      ]
+    },
+    "views": {
+      "terminalwon": [
+        {
+          "id": "terminalwon.terminals",
+          "name": "Active Terminals",
+          "when": "terminalwon.connected"
+        },
+        {
+          "id": "terminalwon.aiInsights",
+          "name": "AI Insights",
+          "when": "terminalwon.connected"
+        },
+        {
+          "id": "terminalwon.activity",
+          "name": "Recent Activity",
+          "when": "terminalwon.connected"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "^18.0.0",
+    "@types/ws": "^8.5.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.14.0"
+  }
+}

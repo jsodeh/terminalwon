@@ -1,0 +1,54 @@
+{
+  "name": "terminalwon-cli",
+  "version": "2.0.0",
+  "description": "TerminalWON CLI - Stream any terminal to your phone",
+  "main": "dist/cli.js",
+  "bin": {
+    "terminalwon": "dist/cli.js",
+    "twon": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "ts-node src/cli.ts",
+    "install-global": "npm run build && npm install -g .",
+    "postinstall": "echo '\\n✓ TerminalWON CLI installed! Run: terminalwon start\\n'"
+  },
+  "keywords": [
+    "terminal",
+    "streaming",
+    "remote",
+    "cli",
+    "pty",
+    "mobile"
+  ],
+  "author": "Joseph Odeh <@thatjosephodeh>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jsodeh/terminalwon"
+  },
+  "homepage": "https://github.com/jsodeh/terminalwon#readme",
+  "bugs": {
+    "url": "https://github.com/jsodeh/terminalwon/issues"
+  },
+  "dependencies": {
+    "ws": "^8.14.0",
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.5",
+    "ora": "^5.4.1",
+    "boxen": "^5.1.2",
+    "node-pty": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/ws": "^8.5.0",
+    "@types/inquirer": "^8.2.6",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
