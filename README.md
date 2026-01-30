@@ -6,7 +6,7 @@
 
 ### Stream Any Terminal to Your Phone
 
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18--20-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-Real--time-010101?style=flat-square&logo=socket.io&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
@@ -20,7 +20,7 @@
   <a href="https://twitter.com/thatjosephodeh"><img src="https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter"></a>
 </p>
 
-[**Quick Start**](#-quick-start) · [**Features**](#-key-features) · [**CLI Reference**](cli/README.md) · [**Self-Hosting**](#-self-hosting) · [**Roadmap**](#-roadmap)
+[**Quick Start**](#-quick-start) · [**Features**](#-key-features) · [**CLI Reference**](cli/README.md) · [**Self-Hosting**](#-self-hosting) · [**Node.js Compatibility**](docs/NODE_VERSION_COMPATIBILITY.md) · [**Roadmap**](#-roadmap)
 
 </div>
 
@@ -105,8 +105,10 @@ TerminalWON lets you **stream any terminal to your phone** with full bidirection
 
 | Requirement | Version | Check Command |
 |:---:|:---:|:---|
-| **Node.js** | 18+ | `node --version` |
+| **Node.js** | 18.x - 20.x | `node --version` |
 | **npm** | 9+ | `npm --version` |
+
+> ⚠️ **Important**: Node.js v24 has compatibility issues with `node-pty`. Use Node.js v18 or v20 LTS for best results.
 
 ### Step 1: Clone & Install
 
@@ -114,6 +116,9 @@ TerminalWON lets you **stream any terminal to your phone** with full bidirection
 # Clone the repository
 git clone https://github.com/jsodeh/terminalwon.git
 cd terminalwon
+
+# Check Node.js version compatibility
+./check-node-version.sh
 
 # Install CLI globally
 cd cli && npm install && npm run build && npm link && cd ..

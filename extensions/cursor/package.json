@@ -1,14 +1,30 @@
 {
   "name": "terminalwon-cursor",
-  "displayName": "TerminalWON for Cursor",
-  "description": "Remote terminal monitoring with AI integration for Cursor IDE",
+  "displayName": "TerminalWON for Cursor - AI Chat Continuity",
+  "description": "Made for Cursor power users. Continue AI conversations anywhere, monitor multiple Cursor instances, and unify your terminals. Never miss AI responses again.",
   "version": "1.0.0",
   "publisher": "terminalwon",
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#0f172a",
+    "theme": "dark"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terminalwon/terminalwon"
+  },
+  "homepage": "https://terminalwon.com",
+  "bugs": {
+    "url": "https://github.com/terminalwon/terminalwon/issues"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Machine Learning",
+    "Visualization"
   ],
   "keywords": [
     "terminal",
@@ -16,6 +32,10 @@
     "monitoring",
     "ai",
     "cursor",
+    "claude",
+    "composer",
+    "ai chat",
+    "productivity",
     "collaboration"
   ],
   "activationEvents": [
@@ -60,7 +80,11 @@
         },
         "terminalwon.aiProvider": {
           "type": "string",
-          "enum": ["openai", "anthropic", "cursor"],
+          "enum": [
+            "openai",
+            "anthropic",
+            "cursor"
+          ],
           "default": "cursor",
           "description": "AI provider for terminal analysis"
         },

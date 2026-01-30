@@ -1,21 +1,40 @@
 {
   "name": "terminalwon-kiro",
-  "displayName": "TerminalWON for Kiro",
-  "description": "Terminal monitoring and collaboration for Kiro IDE",
+  "displayName": "TerminalWON for Kiro - Live Terminal Streaming",
+  "description": "Deep Kiro integration with live terminal streaming and remote collaboration. Create remote terminals, auto-share Kiro terminals, and access your tools from anywhere.",
   "version": "1.0.0",
   "publisher": "terminalwon",
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#16213e",
+    "theme": "dark"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terminalwon/terminalwon"
+  },
+  "homepage": "https://terminalwon.com",
+  "bugs": {
+    "url": "https://github.com/terminalwon/terminalwon/issues"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Visualization"
   ],
   "keywords": [
     "terminal",
     "remote",
     "monitoring",
+    "kiro",
+    "live streaming",
+    "pty",
     "collaboration",
-    "kiro"
+    "devops",
+    "productivity"
   ],
   "activationEvents": [
     "onStartupFinished"

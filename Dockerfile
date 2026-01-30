@@ -1,5 +1,8 @@
 # TerminalWON Server Dockerfile
 # Multi-stage build for smaller image
+# 
+# IMPORTANT: Uses Node.js 20 LTS for node-pty compatibility
+# Node.js v24 has breaking changes that prevent node-pty from working
 
 FROM node:20-alpine AS builder
 

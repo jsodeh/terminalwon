@@ -33,22 +33,22 @@
     "url": "https://github.com/jsodeh/terminalwon/issues"
   },
   "dependencies": {
-    "ws": "^8.14.0",
-    "commander": "^11.0.0",
-    "chalk": "^4.1.2",
-    "inquirer": "^8.2.5",
-    "ora": "^5.4.1",
     "boxen": "^5.1.2",
-    "node-pty": "^1.0.0"
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "inquirer": "^8.2.5",
+    "node-pty": "^1.1.0",
+    "ora": "^5.4.1",
+    "ws": "^8.14.0"
   },
   "devDependencies": {
+    "@types/inquirer": "^8.2.6",
     "@types/node": "^18.0.0",
     "@types/ws": "^8.5.0",
-    "@types/inquirer": "^8.2.6",
-    "typescript": "^5.0.0",
-    "ts-node": "^10.9.0"
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0 <24.0.0"
   }
 }

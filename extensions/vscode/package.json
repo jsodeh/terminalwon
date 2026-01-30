@@ -1,21 +1,41 @@
 {
   "name": "terminalwon-vscode",
-  "displayName": "TerminalWON",
-  "description": "Remote terminal monitoring and control for TerminalWON Hub",
+  "displayName": "TerminalWON - Remote Terminal Hub",
+  "description": "Never lose track of terminals again. Unify all your dev terminals into one beautiful dashboard—accessible from anywhere, even mobile. Continue AI conversations seamlessly.",
   "version": "1.0.0",
   "publisher": "terminalwon",
+  "icon": "assets/icon.png",
+  "galleryBanner": {
+    "color": "#1a1a2e",
+    "theme": "dark"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terminalwon/terminalwon"
+  },
+  "homepage": "https://terminalwon.com",
+  "bugs": {
+    "url": "https://github.com/terminalwon/terminalwon/issues"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Visualization"
   ],
   "keywords": [
     "terminal",
     "remote",
     "monitoring",
+    "cursor",
+    "claude code",
+    "ai",
+    "developer tools",
+    "productivity",
     "collaboration",
-    "ai"
+    "devops"
   ],
   "activationEvents": [
     "onStartupFinished"

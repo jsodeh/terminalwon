@@ -24,7 +24,7 @@ Please be respectful and constructive in all interactions. We're building someth
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 18.x - 20.x (⚠️ NOT v24 - incompatible with node-pty)
 - npm 9+
 - Git
 

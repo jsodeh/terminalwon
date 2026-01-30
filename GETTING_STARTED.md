@@ -75,9 +75,11 @@ TerminalWON streams your terminal to your phone with **full bidirectional contro
 
 | Software | Version | Check Command | Installation |
 |:---:|:---:|:---|:---|
-| **Node.js** | 18+ | `node --version` | [nodejs.org](https://nodejs.org/) |
+| **Node.js** | 18.x - 20.x | `node --version` | [nodejs.org](https://nodejs.org/) |
 | **npm** | 9+ | `npm --version` | Included with Node.js |
 | **Git** | Any | `git --version` | [git-scm.com](https://git-scm.com/) |
+
+> ⚠️ **Critical**: Node.js v24 is NOT compatible with `node-pty` (required for terminal streaming). Use Node.js v18 or v20 LTS.
 
 ### Optional (for Remote Access)
 
@@ -102,6 +104,15 @@ TerminalWON streams your terminal to your phone with **full bidirectional contro
 git clone https://github.com/jsodeh/terminalwon.git
 cd terminalwon
 ```
+
+### Step 1.5: Verify Node.js Version
+
+```bash
+# Run the version checker
+./check-node-version.sh
+```
+
+This will verify you're using a compatible Node.js version (18.x - 20.x). If you're on v24, it will provide instructions to downgrade.
 
 ### Step 2: Install CLI Tool
 
@@ -546,6 +557,39 @@ export PORT=8080
 ---
 
 ## 🔧 Troubleshooting
+
+### "posix_spawnp failed" or PTY errors
+
+**This is a Node.js v24 compatibility issue.** Node.js v24 has breaking changes that prevent `node-pty` from working.
+
+**Solution: Downgrade to Node.js v18 or v20 LTS**
+
+```bash
+# Install nvm (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Restart terminal or source nvm
+source ~/.zshrc  # or ~/.bashrc for bash users
+
+# Install Node.js 20 LTS (recommended)
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# Verify version
+node --version  # Should show v20.x.x
+
+# Rebuild everything
+cd /path/to/terminalwon
+rm -rf node_modules cli/node_modules server/node_modules
+rm -rf package-lock.json cli/package-lock.json server/package-lock.json
+npm install
+cd cli && npm install && npm run build && npm link
+cd ../server && npm install
+
+# Test
+terminalwon start
+```
 
 ### "Cannot connect to hub"
 

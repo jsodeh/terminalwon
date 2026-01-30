@@ -6,7 +6,7 @@
 
 [![npm](https://img.shields.io/badge/npm-terminalwon-CB3837?style=flat-square&logo=npm&logoColor=white)](https://www.npmjs.com/package/terminalwon)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18--20-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 
 [**Installation**](#-installation) · [**Commands**](#-commands) · [**Configuration**](#-configuration) · [**Tunneling**](#-remote-access-tunneling)
 
@@ -36,8 +36,10 @@ The TerminalWON CLI is the **primary interface** for streaming terminals to your
 
 | Requirement | Version | Check |
 |:---:|:---:|:---|
-| Node.js | 18+ | `node --version` |
+| Node.js | 18.x - 20.x | `node --version` |
 | npm | 9+ | `npm --version` |
+
+> ⚠️ **Important**: Node.js v24 is NOT compatible with `node-pty`. Use Node.js v18 or v20 LTS.
 
 ### Install from Source
 
@@ -609,6 +611,41 @@ node cli/dist/cli.js start
    ```
 
 3. Check firewall allows port 3002
+
+</details>
+
+<details>
+<summary><b>Error: posix_spawnp failed</b></summary>
+
+This error occurs when using Node.js v24, which has breaking changes that prevent `node-pty` from working.
+
+**Solution: Downgrade to Node.js v18 or v20**
+
+```bash
+# Install nvm (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Restart terminal or source nvm
+source ~/.zshrc  # or ~/.bashrc
+
+# Install Node.js 20 LTS
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# Verify version
+node --version  # Should show v20.x.x
+
+# Rebuild CLI
+cd cli
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+npm link
+
+# Test
+terminalwon start
+```
 
 </details>
 
