@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Setup - TerminalWON</title>
+    <meta name="theme-color" content="#f9f506">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #f9f506;
+            --accent-dim: rgba(249, 245, 6, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .setup-container {
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 36px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: var(--accent);
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* Tunnel options */
+        .tunnel-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tunnel-option {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .tunnel-option:hover {
+            border-color: var(--accent);
+        }
+
+        .tunnel-option.selected {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .tunnel-option h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tunnel-option p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Command box */
+        .command-box {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .command-box code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .command-box .label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            margin-top: 12px;
+        }
+
+        /* Result */
+        .result {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .result.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .result.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .result.loading {
+            display: block;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        /* Skip link */
+        .skip-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .skip-link a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .skip-link a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="setup-container">
+        <div class="logo">
+            <div class="logo-icon">⚡</div>
+            <h1>TerminalWON</h1>
+            <p>Let's get you set up</p>
+        </div>
+
+        <div class="steps">
+            <div class="step-dot active" id="step1-dot"></div>
+            <div class="step-dot" id="step2-dot"></div>
+            <div class="step-dot" id="step3-dot"></div>
+        </div>
+
+        <!-- Step 1: Welcome / Tunnel Setup -->
+        <div class="card" id="step1">
+            <h2>Remote Access Setup</h2>
+            <p>To access TerminalWON from your phone or other devices, you need to set up a tunnel that exposes your
+                local server securely.</p>
+
+            <div class="tunnel-options" id="tunnel-options-list">
+                <!-- Populated dynamically -->
+                <div class="tunnel-option selected" onclick="selectTunnel('ngrok')">
+                    <h3>ngrok</h3>
+                    <p>Loading...</p>
+                </div>
+                <div class="tunnel-option" onclick="selectTunnel('cloudflare')">
+                    <h3>Cloudflare</h3>
+                    <p>Loading...</p>
+                </div>
+                <div class="tunnel-option" onclick="selectTunnel('localtunnel')">
+                    <h3>localtunnel</h3>
+                    <p>Loading...</p>
+                </div>
+            </div>
+
+            <div class="command-box" id="manual-command-box">
+                <div class="label">Run this command on your computer:</div>
+                <code id="tunnel-command">npx ngrok http 3001</code>
+            </div>
+
+            <div class="btn-group" id="auto-start-group" style="display: none; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="autoStartTunnel()" id="btn-auto-start">
+                    Start Tunnel Automatically
+                </button>
+                <div class="label"
+                    style="text-align: center; margin-top: 8px; font-size: 12px; color: var(--text-secondary);">
+                    Detected on your system
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Or paste your tunnel URL manually</label>
+                <input type="url" class="form-input" id="tunnel-url" placeholder="https://abc123.ngrok.io">
+            </div>
+
+            <div class="result" id="step1-result"></div>
+
+            <button class="btn btn-secondary" onclick="validateTunnel()">Test & Continue</button>
+        </div>
+
+        <!-- Step 2: AI Provider (Optional) -->
+        <div class="card hidden" id="step2">
+            <h2>AI Provider (Optional)</h2>
+            <p>Add an AI provider to enable intelligent error detection and suggestions. You can skip this and add it
+                later.</p>
+
+            <div class="form-group">
+                <label class="form-label">Provider</label>
+                <select class="form-select" id="ai-provider" onchange="updateProviderUI()">
+                    <option value="">Skip - No AI provider</option>
+                    <option value="anthropic">Anthropic (Claude)</option>
+                    <option value="openai">OpenAI (GPT-4)</option>
+                    <option value="xai">xAI (Grok)</option>
+                    <option value="google">Google Gemini</option>
+                    <option value="ollama">Ollama (Local)</option>
+                </select>
+            </div>
+
+            <div class="form-group hidden" id="api-key-group">
+                <label class="form-label">API Key</label>
+                <input type="password" class="form-input" id="api-key" placeholder="sk-...">
+            </div>
+
+            <div class="result" id="step2-result"></div>
+
+            <button class="btn btn-primary" onclick="saveProvider()">Continue</button>
+            <button class="btn btn-secondary" onclick="goToStep(3)">Skip for now</button>
+        </div>
+
+        <!-- Step 3: Complete -->
+        <div class="card hidden" id="step3">
+            <h2>You're all set! 🎉</h2>
+            <p>TerminalWON is ready to use. Open this URL on your phone to access your terminals and AI conversations
+                from anywhere:</p>
+
+            <div class="command-box">
+                <code id="final-url">Loading...</code>
+            </div>
+
+            <button class="btn btn-primary" onclick="window.location.href='/'">Go to Dashboard</button>
+
+            <div class="skip-link">
+                <a href="/settings">Open Settings</a>
+            </div>
+        </div>
+
+        <div class="skip-link" id="skip-setup">
+            <a href="/" onclick="skipSetup()">Skip setup (local access only)</a>
+        </div>
+    </div>
+
+    <script>
+
+        let ws = null;
+        let currentStep = 1;
+        let selectedTunnel = 'ngrok';
+        let tunnelUrl = '';
+        let installedTools = {};
+
+        const TUNNEL_COMMANDS = {
+            ngrok: 'npx ngrok http 3001',
+            cloudflare: 'cloudflared tunnel --url localhost:3001',
+            localtunnel: 'npx localtunnel --port 3001',
+            tailscale: '# Access via your Tailscale IP:3001'
+        };
+
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.hostname}:3002`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    payload: { tool: 'setup', platform: 'pwa' },
+                    timestamp: new Date()
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                handleMessage(msg);
+            };
+
+            ws.onclose = () => {
+                setTimeout(connect, 2000);
+            };
+        }
+
+        function handleMessage(msg) {
+            switch (msg.type) {
+                case 'authenticated':
+                    // Check status and detect tools
+                    ws.send(JSON.stringify({ type: 'settings.setup.status', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'tunnel.detect', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'tunnel.status', timestamp: new Date() }));
+                    break;
+
+                case 'settings.setup.status':
+                    if (msg.payload.complete) {
+                        window.location.href = '/';
+                    }
+                    break;
+
+                case 'tunnel.detected':
+                    installedTools = msg.payload.tools;
+                    updateTunnelList();
+                    break;
+
+                case 'tunnel.started':
+                    const resultEl = document.getElementById('step1-result');
+                    if (msg.payload.success) {
+                        tunnelUrl = msg.payload.url;
+                        resultEl.textContent = '✓ Tunnel started successfully!';
+                        resultEl.className = 'result success';
+
+                        setTimeout(() => {
+                            goToStep(2);
+                        }, 1000);
+                    } else {
+                        resultEl.textContent = `✗ ${msg.payload.error || 'Failed to start tunnel'}`;
+                        resultEl.className = 'result error';
+                        document.getElementById('btn-auto-start').disabled = false;
+                        document.getElementById('btn-auto-start').textContent = 'Start Tunnel Automatically';
+                    }
+                    break;
+
+                case 'tunnel.status':
+                    if (msg.payload.status === 'running' && msg.payload.url) {
+                        tunnelUrl = msg.payload.url;
+                        document.getElementById('tunnel-url').value = tunnelUrl;
+                        document.getElementById('step1-result').textContent = '✓ Tunnel is already running';
+                        document.getElementById('step1-result').className = 'result success';
+                    }
+                    break;
+
+                case 'settings.provider.updated':
+                    if (msg.payload.success) {
+                        goToStep(3);
+                    }
+                    break;
+
+                case 'settings.provider.test.result':
+                    const testResultEl = document.getElementById('step2-result');
+                    if (msg.payload.success) {
+                        testResultEl.textContent = '✓ Connection successful!';
+                        testResultEl.className = 'result success';
+                    } else {
+                        testResultEl.textContent = `✗ ${msg.payload.error || 'Connection failed'}`;
+                        testResultEl.className = 'result error';
+                    }
+                    break;
+            }
+        }
+
+        function updateTunnelList() {
+            const container = document.getElementById('tunnel-options-list');
+            const providers = ['ngrok', 'cloudflare', 'localtunnel', 'tailscale'];
+
+            // Auto-select first installed tool
+            const installed = providers.filter(p => installedTools[p]?.installed);
+            if (installed.length > 0 && !installed.includes(selectedTunnel)) {
+                selectTunnel(installed[0]);
+            }
+
+            container.innerHTML = providers.map(p => {
+                const tool = installedTools[p];
+                const isInstalled = tool?.installed;
+                const isSelected = p === selectedTunnel;
+                let subtitle = isInstalled ? 'Installed' : 'Not Installed';
+                if (p === 'ngrok') subtitle = isInstalled ? 'Installed (Recommended)' : 'Not Installed';
+
+                return `
+                <div class="tunnel-option ${isSelected ? 'selected' : ''}" onclick="selectTunnel('${p}')">
+                    <h3>${p}</h3>
+                    <p style="color: ${isInstalled ? 'var(--success)' : 'var(--text-secondary)'}">${subtitle}</p>
+                </div>
+                `;
+            }).join('');
+
+            updateCommandBox();
+        }
+
+        function selectTunnel(provider) {
+            selectedTunnel = provider;
+            // Update selected class
+            document.querySelectorAll('.tunnel-option').forEach(el => el.classList.remove('selected'));
+            // Since we regenerate HTML, we might need to find by text content or re-render. 
+            // Simpler to just re-render to keep state consistent or just toggle class if we didn't regenerate.
+            // But detect might come late. Let's just update `selectedTunnel` and re-render partials if needed.
+            // For now, let's just re-run updateTunnelList visual selection logic manually to avoid full re-render flicker
+            // actually re-render is fine
+            updateTunnelList();
+        }
+
+        function updateCommandBox() {
+            const isInstalled = installedTools[selectedTunnel]?.installed;
+            const autoStartGroup = document.getElementById('auto-start-group');
+            const manualBox = document.getElementById('manual-command-box');
+
+            if (isInstalled) {
+                autoStartGroup.style.display = 'block';
+                manualBox.style.display = 'none';
+            } else {
+                autoStartGroup.style.display = 'none';
+                manualBox.style.display = 'block';
+                document.getElementById('tunnel-command').textContent = TUNNEL_COMMANDS[selectedTunnel];
+            }
+        }
+
+        function autoStartTunnel() {
+            const btn = document.getElementById('btn-auto-start');
+            const resultEl = document.getElementById('step1-result');
+
+            btn.disabled = true;
+            btn.textContent = 'Starting tunnel...';
+            resultEl.textContent = 'Starting tunnel subprocess...';
+            resultEl.className = 'result loading';
+
+            ws.send(JSON.stringify({
+                type: 'tunnel.start',
+                payload: { provider: selectedTunnel },
+                timestamp: new Date()
+            }));
+        }
+
+        function validateTunnel() {
+            const url = document.getElementById('tunnel-url').value.trim();
+            const resultEl = document.getElementById('step1-result');
+
+            if (!url) {
+                resultEl.textContent = 'Please enter your tunnel URL';
+                resultEl.className = 'result error';
+                return;
+            }
+
+            resultEl.textContent = 'Testing connection...';
+            resultEl.className = 'result loading';
+
+            // Test the tunnel
+            fetch(`${url}/health`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        resultEl.textContent = '✓ Tunnel is working!';
+                        resultEl.className = 'result success';
+                        tunnelUrl = url;
+
+                        // Save tunnel config
+                        ws.send(JSON.stringify({
+                            type: 'settings.tunnel.update',
+                            payload: { provider: selectedTunnel, url, configured: true },
+                            timestamp: new Date()
+                        }));
+
+                        setTimeout(() => goToStep(2), 500);
+                    } else {
+                        throw new Error('Invalid response');
+                    }
+                })
+                .catch(e => {
+                    resultEl.textContent = '✗ Cannot reach server through tunnel. Make sure the tunnel is running.';
+                    resultEl.className = 'result error';
+                });
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+
+            // Hide all steps
+            document.querySelectorAll('.card').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`step${step}`).classList.remove('hidden');
+
+            // Update dots
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`step${i}-dot`);
+                dot.classList.remove('active', 'completed');
+                if (i < step) dot.classList.add('completed');
+                if (i === step) dot.classList.add('active');
+            }
+
+            // Hide skip on last step
+            document.getElementById('skip-setup').style.display = step === 3 ? 'none' : 'block';
+
+            // Update final URL
+            if (step === 3) {
+                document.getElementById('final-url').textContent = tunnelUrl || window.location.origin;
+            }
+        }
+
+        function updateProviderUI() {
+            const provider = document.getElementById('ai-provider').value;
+            const keyGroup = document.getElementById('api-key-group');
+
+            if (provider && provider !== 'ollama') {
+                keyGroup.classList.remove('hidden');
+            } else {
+                keyGroup.classList.add('hidden');
+            }
+        }
+
+        function saveProvider() {
+            const provider = document.getElementById('ai-provider').value;
+            const apiKey = document.getElementById('api-key').value;
+
+            if (!provider) {
+                goToStep(3);
+                return;
+            }
+
+            const resultEl = document.getElementById('step2-result');
+
+            if (provider !== 'ollama' && !apiKey) {
+                resultEl.textContent = 'Please enter an API key';
+                resultEl.className = 'result error';
+                return;
+            }
+
+            // Test and save
+            resultEl.textContent = 'Testing connection...';
+            resultEl.className = 'result loading';
+
+            ws.send(JSON.stringify({
+                type: 'settings.provider.test',
+                payload: { provider, apiKey },
+                timestamp: new Date()
+            }));
+
+            // Also save it
+            setTimeout(() => {
+                ws.send(JSON.stringify({
+                    type: 'settings.provider.update',
+                    payload: { provider, config: { apiKey, enabled: true } },
+                    timestamp: new Date()
+                }));
+
+                ws.send(JSON.stringify({
+                    type: 'settings.default.set',
+                    payload: { provider },
+                    timestamp: new Date()
+                }));
+            }, 1000);
+        }
+
+        function skipSetup() {
+            ws.send(JSON.stringify({
+                type: 'settings.setup.complete',
+                timestamp: new Date()
+            }));
+            window.location.href = '/';
+        }
+
+        // Initialize
+        window.onload = connect;
+    </script>
+
+</body>
+
+</html>

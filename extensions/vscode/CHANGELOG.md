@@ -5,7 +5,7 @@ All notable changes to the TerminalWON VSCode extension will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-01-29
+## [1.0.0] - 2026-02-02
 
 ### 🎉 Initial Release
 
@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-Terminal Support** - Monitor multiple terminals simultaneously
 - **Activity Bar Integration** - Quick access to active terminals and recent activity
 - **Context Menu** - Right-click any terminal to share it
+- **AI Conversation Continuity** - Continue Claude/Cursor AI chats across devices
+- **Multi-Provider Support** - Works with Anthropic, OpenAI, Google Gemini, xAI, and Ollama
 
 #### Commands
 - `TerminalWON: Connect to Hub` - Connect to the TerminalWON dashboard
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - End-to-end encryption for all terminal data
 - Secure WebSocket connections (WSS)
 - API key authentication
+- 2FA support for remote execution
 
 ---
 
@@ -44,3 +47,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [ ] Team workspace support
 - [ ] Custom notification rules
 - [ ] Keyboard shortcuts
+- [ ] Windsurf integration
+- [ ] JetBrains IDE support

@@ -1,0 +1,21 @@
+# VSCode Extension Ignore File
+# Excludes these files from the VSIX package
+
+.vscode/**
+.vscode-test/**
+src/**
+**/*.ts
+!node_modules/**/*.d.ts
+.gitignore
+tsconfig.json
+*.vsix
+.eslintrc.json
+.prettierrc
+package-lock.json
+**/*.map
+
+# Only include production dependencies
+node_modules/.bin/**
+
+# Documentation in wrong place
+assets/README.md

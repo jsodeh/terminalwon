@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Settings - TerminalWON</title>
+    <meta name="theme-color" content="#f9f506">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #f9f506;
+            --accent-dim: rgba(249, 245, 6, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        /* Provider Cards */
+        .providers-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .provider-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .provider-card:hover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+        }
+
+        .provider-card.configured {
+            border-color: var(--success);
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .provider-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .provider-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .provider-status.configured {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .provider-status.not-configured {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .provider-models {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Tunnel Section */
+        .tunnel-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .tunnel-card.configured {
+            border-color: var(--success);
+        }
+
+        .tunnel-url {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            word-break: break-all;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* Test Result */
+        .test-result {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .test-result.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .test-result.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .test-result.loading {
+            display: block;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--accent-dim);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .info-box p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .info-box a {
+            color: var(--accent);
+        }
+
+        /* Toggle */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .toggle-label {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: var(--bg-tertiary);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--success);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(22px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h1>Settings</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- AI Providers Section -->
+        <section class="section">
+            <h2 class="section-title">AI Providers</h2>
+            <div class="providers-grid" id="providers-list">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- Agent Configuration Section -->
+        <section class="section">
+            <h2 class="section-title">Agent Configuration</h2>
+            <div class="providers-grid" id="agents-list">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- Default Provider Section -->
+        <section class="section">
+            <h2 class="section-title">Default Model</h2>
+            <div class="form-group">
+                <select class="form-select" id="default-model">
+                    <option value="">Configure a provider first</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Tunnel Section -->
+        <section class="section">
+            <h2 class="section-title">Remote Access (Required)</h2>
+            <div class="tunnel-card" id="tunnel-card">
+                <div class="provider-header">
+                    <span class="provider-name">Tunnel Configuration</span>
+                    <span class="provider-status not-configured" id="tunnel-status">Not Configured</span>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;">
+                    Required for accessing TerminalWON from your phone or other devices.
+                </p>
+                <div class="tunnel-url" id="tunnel-url" style="display: none;"></div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="openTunnelModal()">Configure</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Preferences Section -->
+        <section class="section">
+            <h2 class="section-title">Preferences</h2>
+            <div class="toggle-row">
+                <span class="toggle-label">Auto-detect terminal errors</span>
+                <div class="toggle active" id="toggle-errors" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="toggle-row">
+                <span class="toggle-label">Show agent insights</span>
+                <div class="toggle active" id="toggle-insights" onclick="this.classList.toggle('active')"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Provider Modal -->
+    <div class="modal-overlay" id="provider-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-provider-name">Configure Provider</h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box" id="modal-info">
+                    <h3>API Key Required</h3>
+                    <p id="modal-info-text">Enter your API key to enable this provider.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="password" class="form-input" id="modal-api-key" placeholder="sk-...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select class="form-select" id="modal-model">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="test-result" id="test-result"></div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="testProvider()">Test Connection</button>
+                    <button class="btn btn-primary" onclick="saveProvider()">Save</button>
+                </div>
+
+                <div class="btn-group" style="margin-top: 12px;">
+                    <button class="btn btn-danger" onclick="removeProvider()">Remove API Key</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agent Modal -->
+    <div class="modal-overlay" id="agent-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-agent-name">Configure Agent</h2>
+                <button class="modal-close" onclick="closeAgentModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="toggle-row" style="margin-bottom: 24px;">
+                    <span class="toggle-label">Enable Agent</span>
+                    <div class="toggle" id="agent-enabled" onclick="toggleAgentEnabled()"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">AI Provider</label>
+                    <select class="form-select" id="agent-provider" onchange="updateAgentModels()">
+                        <option value="">Use Default</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select class="form-select" id="agent-model">
+                        <option value="">Use Default</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="form-group" id="agent-prompt-group">
+                    <label class="form-label">System Prompt</label>
+                    <textarea class="form-input" id="agent-prompt" rows="6"
+                        placeholder="Leave empty for default..."></textarea>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                        Overrides the built-in system prompt.
+                    </p>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="saveAgentConfig()">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tunnel Modal -->
+    <div class="modal-overlay" id="tunnel-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Configure Remote Access</h2>
+                <button class="modal-close" onclick="closeTunnelModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h3>Why is this required?</h3>
+                    <p>To access TerminalWON from your phone or other devices, you need a tunnel that exposes your local
+                        server to the internet securely.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tunnel Provider</label>
+                    <select class="form-select" id="tunnel-provider" onchange="updateTunnelInstructions()">
+                        <option value="ngrok">ngrok (Recommended)</option>
+                        <option value="cloudflare">Cloudflare Tunnel</option>
+                        <option value="localtunnel">localtunnel</option>
+                        <option value="tailscale">Tailscale</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Tunnel URL</label>
+                    <input type="url" class="form-input" id="tunnel-url-input" placeholder="https://abc123.ngrok.io">
+                </div>
+
+                <div class="form-group" id="tunnel-auth-group">
+                    <label class="form-label">Auth Token (for ngrok/Cloudflare)</label>
+                    <input type="password" class="form-input" id="tunnel-auth" placeholder="Optional">
+                </div>
+
+                <div class="info-box" id="tunnel-instructions"
+                    style="background: var(--bg-tertiary); border-color: var(--border);">
+                    <h3>Setup Instructions</h3>
+                    <p id="tunnel-instructions-text">
+                        1. Install ngrok: <code>npm install -g ngrok</code><br>
+                        2. Start tunnel: <code>ngrok http 3001</code><br>
+                        3. Copy the HTTPS URL and paste above
+                    </p>
+                </div>
+
+                <div class="test-result" id="tunnel-test-result"></div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="testTunnel()">Test Connection</button>
+                    <button class="btn btn-primary" onclick="saveTunnel()">Save & Enable</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws = null;
+        let config = {};
+        let providers = [];
+        let agents = {};
+        let currentProviderId = null;
+        let currentAgentType = null;
+
+        const PROVIDER_INFO = {
+            anthropic: { name: 'Anthropic', url: 'https://console.anthropic.com/settings/keys', keyPrefix: 'sk-ant-' },
+            openai: { name: 'OpenAI', url: 'https://platform.openai.com/api-keys', keyPrefix: 'sk-' },
+            xai: { name: 'xAI (Grok)', url: 'https://x.ai/api', keyPrefix: 'xai-' },
+            google: { name: 'Google Gemini', url: 'https://aistudio.google.com/app/apikey', keyPrefix: 'AI' },
+            manus: { name: 'Manus AI', url: 'https://manus.ai/settings/api', keyPrefix: 'msk-' },
+            ollama: { name: 'Ollama (Local)', url: 'https://ollama.ai', keyPrefix: '' }
+        };
+
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.hostname}:3002`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                // Authenticate
+                ws.send(JSON.stringify({
+                    type: 'auth',
+                    payload: { tool: 'settings', platform: 'pwa' },
+                    timestamp: new Date()
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                handleMessage(msg);
+            };
+
+            ws.onclose = () => {
+                setTimeout(connect, 2000);
+            };
+        }
+
+        function handleMessage(msg) {
+            switch (msg.type) {
+                case 'authenticated':
+                    // Request settings
+                    ws.send(JSON.stringify({ type: 'settings.get', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'settings.providers', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'settings.agents.get', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'tunnel.detect', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'tunnel.status', timestamp: new Date() }));
+                    break;
+
+                case 'settings.config':
+                    config = msg.payload;
+                    updateTunnelUI();
+                    updateDefaultModelUI();
+                    break;
+
+                case 'settings.providers':
+                    providers = msg.payload.providers;
+                    renderProviders();
+                    break;
+
+                case 'settings.provider.test.result':
+                    showTestResult(msg.payload);
+                    break;
+
+                case 'settings.provider.updated':
+                    // Refresh
+                    ws.send(JSON.stringify({ type: 'settings.get', timestamp: new Date() }));
+                    ws.send(JSON.stringify({ type: 'settings.providers', timestamp: new Date() }));
+                    if (msg.payload.success) closeModal();
+                    break;
+
+                case 'settings.tunnel.updated':
+                    config.tunnel = msg.payload.tunnel;
+                    updateTunnelUI();
+                    closeTunnelModal();
+                    break;
+
+                case 'settings.agents':
+                    agents = msg.payload.agents;
+                    renderAgents();
+                    break;
+
+                case 'settings.agent.updated':
+                    agents[msg.payload.agentType] = msg.payload.config;
+                    renderAgents();
+                    if (currentAgentType === msg.payload.agentType) {
+                        closeAgentModal();
+                    }
+                    break;
+
+                case 'tunnel.detected':
+                    updateTunnelOptions(msg.payload.tools);
+                    break;
+
+                case 'tunnel.started':
+                    if (msg.payload.success) {
+                        document.getElementById('tunnel-test-result').className = 'test-result success';
+                        document.getElementById('tunnel-test-result').textContent = 'Tunnel started successfully!';
+                        setTimeout(() => {
+                            ws.send(JSON.stringify({ type: 'settings.get', timestamp: new Date() }));
+                            closeTunnelModal();
+                        }, 1000);
+                    } else {
+                        document.getElementById('tunnel-test-result').className = 'test-result error';
+                        document.getElementById('tunnel-test-result').textContent = msg.payload.error || 'Failed to start tunnel';
+                    }
+                    break;
+
+                case 'tunnel.stopped':
+                    ws.send(JSON.stringify({ type: 'settings.get', timestamp: new Date() }));
+                    break;
+
+                case 'tunnel.status':
+                    updateTunnelStatus(msg.payload);
+                    break;
+            }
+        }
+
+        function renderProviders() {
+            const container = document.getElementById('providers-list');
+            container.innerHTML = providers.map(p => {
+                const info = PROVIDER_INFO[p.id] || { name: p.name };
+                const isConfigured = p.hasKey || p.id === 'ollama';
+                return `
+            <div class="provider-card ${isConfigured ? 'configured' : ''}" onclick="openProviderModal('${p.id}')">
+                <div class="provider-header">
+                    <span class="provider-name">${info.name}</span>
+                    <span class="provider-status ${isConfigured ? 'configured' : 'not-configured'}">
+                        ${isConfigured ? '✓ Configured' : 'Add Key'}
+                    </span>
+                </div>
+                <div class="provider-models">${p.models.map(m => m.name).join(', ')}</div>
+            </div>
+        `;
+            }).join('');
+
+            updateDefaultModelUI();
+        }
+
+        function openProviderModal(providerId) {
+            currentProviderId = providerId;
+            const provider = providers.find(p => p.id === providerId);
+            const info = PROVIDER_INFO[providerId] || {};
+
+            document.getElementById('modal-provider-name').textContent = `Configure ${info.name || provider.name}`;
+            document.getElementById('modal-info-text').innerHTML = `Get your API key from <a href="${info.url}" target="_blank">${info.url}</a>`;
+            document.getElementById('modal-api-key').value = '';
+            document.getElementById('modal-api-key').placeholder = info.keyPrefix || 'Enter API key';
+            document.getElementById('test-result').className = 'test-result';
+
+            // Populate models
+            const modelSelect = document.getElementById('modal-model');
+            modelSelect.innerHTML = provider.models.map(m =>
+                `<option value="${m.id}">${m.name} (${m.tier})</option>`
+            ).join('');
+
+            // Special case for Ollama
+            if (providerId === 'ollama') {
+                document.getElementById('modal-api-key').disabled = true;
+                document.getElementById('modal-api-key').placeholder = 'No key required';
+                document.getElementById('modal-info-text').textContent = 'Ollama runs locally - no API key needed. Make sure Ollama is running.';
+            } else {
+                document.getElementById('modal-api-key').disabled = false;
+            }
+
+            document.getElementById('provider-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('provider-modal').classList.remove('active');
+            currentProviderId = null;
+        }
+
+        function testProvider() {
+            const apiKey = document.getElementById('modal-api-key').value;
+            const resultEl = document.getElementById('test-result');
+
+            if (!apiKey && currentProviderId !== 'ollama') {
+                resultEl.textContent = 'Enter an API key first';
+                resultEl.className = 'test-result error';
+                return;
+            }
+
+            resultEl.textContent = 'Testing connection...';
+            resultEl.className = 'test-result loading';
+
+            ws.send(JSON.stringify({
+                type: 'settings.provider.test',
+                payload: { provider: currentProviderId, apiKey },
+                timestamp: new Date()
+            }));
+        }
+
+        function showTestResult(result) {
+            const resultEl = document.getElementById('test-result');
+            if (result.success) {
+                resultEl.textContent = '✓ Connection successful!';
+                resultEl.className = 'test-result success';
+            } else {
+                resultEl.textContent = `✗ ${result.error || 'Connection failed'}`;
+                resultEl.className = 'test-result error';
+            }
+        }
+
+        function saveProvider() {
+            const apiKey = document.getElementById('modal-api-key').value;
+            const model = document.getElementById('modal-model').value;
+
+            ws.send(JSON.stringify({
+                type: 'settings.provider.update',
+                payload: {
+                    provider: currentProviderId,
+                    config: { apiKey: apiKey || null, enabled: true, defaultModel: model }
+                },
+                timestamp: new Date()
+            }));
+        }
+
+        function removeProvider() {
+            ws.send(JSON.stringify({
+                type: 'settings.provider.update',
+                payload: {
+                    provider: currentProviderId,
+                    config: { apiKey: null, enabled: false }
+                },
+                timestamp: new Date()
+            }));
+        }
+
+        function updateDefaultModelUI() {
+            const select = document.getElementById('default-model');
+            const configured = providers.filter(p => p.hasKey || p.id === 'ollama');
+
+            if (configured.length === 0) {
+                select.innerHTML = '<option value="">Configure a provider first</option>';
+                return;
+            }
+
+            let options = '';
+            configured.forEach(p => {
+                p.models.forEach(m => {
+                    const selected = config.defaultModel === m.id ? 'selected' : '';
+                    options += `<option value="${p.id}:${m.id}" ${selected}>${PROVIDER_INFO[p.id]?.name || p.name} - ${m.name}</option>`;
+                });
+            });
+
+            select.innerHTML = options;
+            select.onchange = () => {
+                const [provider, model] = select.value.split(':');
+                ws.send(JSON.stringify({
+                    type: 'settings.default.set',
+                    payload: { provider, model },
+                    timestamp: new Date()
+                }));
+            };
+        }
+
+
+        // === Agent UI Functions ===
+
+        const AGENT_INFO = {
+            terminal: { name: 'Terminal Agent', desc: 'Analyzes terminal output for errors', icon: '💻' },
+            ide: { name: 'IDE Agent', desc: 'Correlates errors with chat history', icon: '🧠' },
+            chat: { name: 'Chat Assistant', desc: 'General chat capabilities', icon: '💬' },
+            computerUse: { name: 'Computer Operator', desc: 'Autonomous UI interaction', icon: '🤖' }
+        };
+
+        function renderAgents() {
+            const container = document.getElementById('agents-list');
+            if (!container) return;
+
+            const agentKeys = ['terminal', 'ide', 'chat', 'computerUse'];
+
+            container.innerHTML = agentKeys.map(type => {
+                const config = agents[type] || { enabled: false };
+                const info = AGENT_INFO[type];
+                const isEnabled = config.enabled;
+                const statusClass = isEnabled ? 'configured' : 'not-configured';
+                const statusText = isEnabled ? 'Enabled' : 'Disabled';
+
+                // Show provider info if enabled
+                let details = 'Using default provider';
+                if (config.provider) {
+                    const providerName = PROVIDER_INFO[config.provider]?.name || config.provider;
+                    details = `Using ${providerName}`;
+                    if (config.model) details += ` (${config.model})`;
+                }
+
+                return `
+            <div class="provider-card ${isEnabled ? 'configured' : ''}" onclick="openAgentModal('${type}')">
+                <div class="provider-header">
+                    <span class="provider-name">${info.icon} ${info.name}</span>
+                    <span class="provider-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="provider-models">${info.desc}</div>
+                <div class="provider-models" style="margin-top: 4px; opacity: 0.7;">${details}</div>
+            </div>
+                `;
+            }).join('');
+        }
+
+        function openAgentModal(type) {
+            currentAgentType = type;
+            const config = agents[type] || {};
+            const info = AGENT_INFO[type];
+
+            document.getElementById('modal-agent-name').textContent = `Configure ${info.name}`;
+
+            // Set enabled toggle
+            const toggle = document.getElementById('agent-enabled');
+            if (config.enabled) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+
+            // Populate providers
+            const providerSelect = document.getElementById('agent-provider');
+            const configuredProviders = providers.filter(p => p.hasKey || p.id === 'ollama');
+
+            let options = '<option value="">Use Default</option>';
+            configuredProviders.forEach(p => {
+                const selected = config.provider === p.id ? 'selected' : '';
+                options += `<option value="${p.id}" ${selected}>${PROVIDER_INFO[p.id]?.name || p.name}</option>`;
+            });
+            providerSelect.innerHTML = options;
+
+            // Computer Use requires Anthropic
+            if (type === 'computerUse') {
+                providerSelect.value = 'anthropic';
+                providerSelect.disabled = true;
+                if (!configuredProviders.find(p => p.id === 'anthropic')) {
+                    options += '<option value="anthropic" disabled selected>Anthropic (Required)</option>';
+                    providerSelect.innerHTML = options;
+                }
+            } else {
+                providerSelect.disabled = false;
+            }
+
+            // Populate models
+            updateAgentModels();
+
+            // System Prompt
+            const promptArea = document.getElementById('agent-prompt');
+            promptArea.value = config.systemPrompt || '';
+
+            // Hide prompt for computer-use (it uses internal prompts)
+            document.getElementById('agent-prompt-group').style.display = type === 'computerUse' ? 'none' : 'block';
+
+            document.getElementById('agent-modal').classList.add('active');
+        }
+
+        function closeAgentModal() {
+            document.getElementById('agent-modal').classList.remove('active');
+            currentAgentType = null;
+        }
+
+        function toggleAgentEnabled() {
+            document.getElementById('agent-enabled').classList.toggle('active');
+        }
+
+        function updateAgentModels() {
+            const providerId = document.getElementById('agent-provider').value;
+            const modelSelect = document.getElementById('agent-model');
+            const config = agents[currentAgentType] || {};
+
+            if (!providerId) {
+                modelSelect.innerHTML = '<option value="">Use Default (Global)</option>';
+                return;
+            }
+
+            const provider = providers.find(p => p.id === providerId);
+            if (!provider) return;
+
+            let options = '<option value="">Use Default (Provider)</option>';
+            provider.models.forEach(m => {
+                const selected = config.model === m.id ? 'selected' : '';
+                options += `<option value="${m.id}" ${selected}>${m.name}</option>`;
+            });
+            modelSelect.innerHTML = options;
+        }
+
+        function saveAgentConfig() {
+            const enabled = document.getElementById('agent-enabled').classList.contains('active');
+            const provider = document.getElementById('agent-provider').value || null;
+            const model = document.getElementById('agent-model').value || null;
+            const systemPrompt = document.getElementById('agent-prompt').value || null;
+
+            ws.send(JSON.stringify({
+                type: 'settings.agent.update',
+                payload: {
+                    agentType: currentAgentType,
+                    config: { enabled, provider, model, systemPrompt }
+                },
+                timestamp: new Date()
+            }));
+        }
+
+        // === Tunnel UI Functions ===
+
+        function updateTunnelUI() {
+            const card = document.getElementById('tunnel-card');
+            const status = document.getElementById('tunnel-status');
+            const urlDiv = document.getElementById('tunnel-url');
+
+            if (config.tunnel?.configured && config.tunnel?.url) {
+                card.classList.add('configured');
+                status.className = 'provider-status configured';
+                status.textContent = '✓ Active';
+                urlDiv.style.display = 'block';
+                urlDiv.textContent = config.tunnel.url;
+            } else {
+                card.classList.remove('configured');
+                status.className = 'provider-status not-configured';
+                status.textContent = 'Not Configured';
+                urlDiv.style.display = 'none';
+            }
+        }
+
+        function updateTunnelOptions(tools) {
+            const select = document.getElementById('tunnel-provider');
+            if (!select) return;
+
+            // Mark installed tools
+            Array.from(select.options).forEach(opt => {
+                const tool = tools[opt.value];
+                if (tool) {
+                    const baseText = opt.text.split(' - ')[0].split(' (')[0];
+                    if (tool.installed) {
+                        opt.text = `${baseText} (Installed)`;
+                        opt.style.color = 'var(--text-primary)';
+                    } else {
+                        opt.text = `${baseText} - Not Installed`;
+                        opt.style.color = 'var(--text-secondary)';
+                    }
+                }
+            });
+        }
+
+        function updateTunnelStatus(status) {
+            // Update modal status if open
+            if (document.getElementById('tunnel-modal').classList.contains('active')) {
+                const result = document.getElementById('tunnel-test-result');
+                if (status.status === 'running') {
+                    result.className = 'test-result success';
+                    result.textContent = `Running: ${status.url}`;
+                } else if (status.status === 'starting') {
+                    result.className = 'test-result loading';
+                    result.textContent = 'Starting tunnel...';
+                }
+            }
+        }
+
+        function openTunnelModal() {
+            document.getElementById('tunnel-modal').classList.add('active');
+            // Request detection
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'tunnel.detect', timestamp: new Date() }));
+            }
+            // Pre-fill if configured
+            if (config.tunnel?.url) {
+                document.getElementById('tunnel-url-input').value = config.tunnel.url;
+            }
+            if (config.tunnel?.provider) {
+                document.getElementById('tunnel-provider').value = config.tunnel.provider;
+            }
+            updateTunnelInstructions();
+        }
+
+        function closeTunnelModal() {
+            document.getElementById('tunnel-modal').classList.remove('active');
+        }
+
+        function updateTunnelInstructions() {
+            const provider = document.getElementById('tunnel-provider').value;
+            const text = document.getElementById('tunnel-instructions-text');
+            const authGroup = document.getElementById('tunnel-auth-group');
+
+            if (provider === 'ngrok') {
+                text.innerHTML = `
+                        1. Install ngrok: <code>npm install -g ngrok</code><br>
+                        2. Start tunnel: <code>ngrok http 3001</code><br>
+                        3. Copy the HTTPS URL and paste above
+                    `;
+                authGroup.style.display = 'block';
+            } else if (provider === 'cloudflare') {
+                text.innerHTML = `
+                        1. Install cloudflared: <code>brew install cloudflared</code><br>
+                        2. Start tunnel: <code>cloudflared tunnel --url http://localhost:3001</code><br>
+                        3. Copy the .trycloudflare.com URL
+                    `;
+                authGroup.style.display = 'none';
+            } else if (provider === 'localtunnel') {
+                text.innerHTML = `
+                        1. Install localtunnel: <code>npm install -g localtunnel</code><br>
+                        2. Start tunnel: <code>lt --port 3001</code><br>
+                        3. Copy the URL
+                    `;
+                authGroup.style.display = 'none';
+            } else {
+                text.innerHTML = `Select a tunnel provider.`;
+                authGroup.style.display = 'none';
+            }
+        }
+
+        function testTunnel() {
+            const url = document.getElementById('tunnel-url-input').value;
+            if (!url) {
+                document.getElementById('tunnel-test-result').textContent = 'Enter URL first';
+                document.getElementById('tunnel-test-result').className = 'test-result error';
+                return;
+            }
+
+            document.getElementById('tunnel-test-result').textContent = 'Testing connectivity...';
+            document.getElementById('tunnel-test-result').className = 'test-result loading';
+
+            // Simple connectivity check via fetch to health endpoint
+            fetch(`${url}/health`, { mode: 'no-cors' }) // no-cors for simple check
+                .then(() => {
+                    document.getElementById('tunnel-test-result').textContent = 'Connectivity OK (Note: Check manually if behind authentication)';
+                    document.getElementById('tunnel-test-result').className = 'test-result success';
+                })
+                .catch(() => {
+                    document.getElementById('tunnel-test-result').textContent = 'Connectivity Check Failed (might be CORS or down)';
+                    document.getElementById('tunnel-test-result').className = 'test-result error';
+                });
+        }
+
+        function saveTunnel() {
+            const provider = document.getElementById('tunnel-provider').value;
+            const url = document.getElementById('tunnel-url-input').value;
+
+            if (url) {
+                // Manual URL entry
+                ws.send(JSON.stringify({
+                    type: 'settings.tunnel.update',
+                    payload: { provider, url, configured: true },
+                    timestamp: new Date()
+                }));
+            } else {
+                // Auto-start
+                document.getElementById('tunnel-test-result').textContent = 'Starting tunnel subprocess...';
+                document.getElementById('tunnel-test-result').className = 'test-result loading';
+
+                ws.send(JSON.stringify({
+                    type: 'tunnel.start',
+                    payload: { provider },
+                    timestamp: new Date()
+                }));
+            }
+        }
+
+        // Initialize
+        window.onload = connect;
+    </script>
+
+</body>
+
+</html>

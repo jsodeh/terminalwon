@@ -1,7 +1,7 @@
 {
   "name": "terminalwon-vscode",
   "displayName": "TerminalWON - Remote Terminal Hub",
-  "description": "Never lose track of terminals again. Unify all your dev terminals into one beautiful dashboard—accessible from anywhere, even mobile. Continue AI conversations seamlessly.",
+  "description": "Never lose track of terminals again. TerminalWON unifies all your dev terminals into one beautiful dashboard—accessible from anywhere, even mobile. Continue AI conversations seamlessly across Cursor, Claude Code, and more.",
   "version": "1.0.0",
   "publisher": "terminalwon",
   "icon": "assets/icon.png",
@@ -12,11 +12,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/terminalwon/terminalwon"
+    "url": "https://github.com/jsodeh/terminalwon"
   },
   "homepage": "https://terminalwon.com",
   "bugs": {
-    "url": "https://github.com/terminalwon/terminalwon/issues"
+    "url": "https://github.com/jsodeh/terminalwon/issues"
   },
   "engines": {
     "vscode": "^1.80.0"
@@ -65,12 +65,12 @@
       "properties": {
         "terminalwon.hubUrl": {
           "type": "string",
-          "default": "ws://localhost:3001",
+          "default": "ws://localhost:3002",
           "description": "TerminalWON Hub WebSocket URL"
         },
         "terminalwon.apiKey": {
           "type": "string",
-          "default": "test-key-123",
+          "default": "",
           "description": "Your TerminalWON API Key"
         },
         "terminalwon.autoConnect": {

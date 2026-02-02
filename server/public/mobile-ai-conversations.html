@@ -1,425 +1,861 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>TerminalWON AI Conversations</title>
-<meta name="theme-color" content="#f9f506">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TerminalWON">
-<link rel="manifest" href="manifest.json">
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<!-- Highlight.js for syntax highlighting -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-        darkMode: "class",
-        theme: {
-            extend: {
-                colors: {
-                    "primary": "#f9f506",
-                    "background-light": "#f8f8f5",
-                    "background-dark": "#23220f",
-                    "code-bg": "#1e1e1e",
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TerminalWON AI Conversations</title>
+    <meta name="theme-color" content="#f9f506">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TerminalWON">
+    <link rel="manifest" href="manifest.json">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f9f506",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#23220f",
+                        "code-bg": "#1e1e1e",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
                 },
-                fontFamily: {
-                    "display": ["Spline Sans", "sans-serif"],
-                    "mono": ["JetBrains Mono", "monospace"],
-                },
-                borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
             },
-        },
-    }
-</script>
+        }
+    </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display h-screen flex flex-col overflow-hidden text-[#181811] dark:text-white max-w-md mx-auto">
-<style>
-    /* Custom Scrollbar for code blocks */
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .code-scroll::-webkit-scrollbar { height: 6px; }
-    .code-scroll::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-    .code-scroll::-webkit-scrollbar-track { background: transparent; }
-    body { min-height: max(884px, 100dvh); }
-    /* IDE badges */
-    .badge-kiro { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-    .badge-cursor { background: linear-gradient(135deg, #10b981, #059669); }
-    .badge-antigravity { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    /* Message animations */
-    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .message-animate { animation: slideIn 0.3s ease-out; }
-    /* Connection status pulse */
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .status-pulse { animation: pulse 2s infinite; }
-    /* Copy button feedback */
-    .copy-success { background: #10b981 !important; }
-</style>
 
-<!-- Top Navigation Bar -->
-<header class="flex-none flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between z-20 border-b border-gray-200 dark:border-gray-800">
-    <button onclick="goBack()" class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#181811] dark:text-white">
-        <span class="material-symbols-outlined">arrow_back</span>
-    </button>
-    <div class="flex flex-col items-center flex-1 mx-2">
-        <h2 id="headerTitle" class="text-[#181811] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Conversations</h2>
-        <div id="connectionStatus" class="flex items-center gap-1 opacity-60">
-            <span id="statusDot" class="size-2 rounded-full bg-yellow-500 block status-pulse"></span>
-            <span id="statusText" class="text-xs font-medium">Connecting...</span>
-        </div>
-    </div>
-    <div class="flex items-center justify-end gap-1">
-        <!-- IDE Filter Dropdown -->
-        <div class="relative">
-            <button id="filterBtn" onclick="toggleFilterDropdown()" class="flex items-center justify-center rounded-full size-10 bg-transparent text-[#181811] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-                <span class="material-symbols-outlined">filter_list</span>
-            </button>
-            <div id="filterDropdown" class="hidden absolute right-0 top-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[140px] z-30">
-                <button onclick="setFilter('all')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="all">
-                    <span class="material-symbols-outlined text-base">apps</span> All IDEs
-                </button>
-                <button onclick="setFilter('kiro')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="kiro">
-                    <span class="size-3 rounded-full badge-kiro"></span> Kiro
-                </button>
-                <button onclick="setFilter('cursor')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="cursor">
-                    <span class="size-3 rounded-full badge-cursor"></span> Cursor
-                </button>
-                <button onclick="setFilter('antigravity')" class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2" data-filter="antigravity">
-                    <span class="size-3 rounded-full badge-antigravity"></span> Antigravity
-                </button>
-            </div>
-        </div>
-        <button onclick="toggleView()" class="flex items-center justify-center rounded-full size-10 bg-transparent text-[#181811] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-            <span id="viewIcon" class="material-symbols-outlined">list</span>
-        </button>
-    </div>
-</header>
+<body
+    class="bg-background-light dark:bg-background-dark font-display h-screen flex flex-col overflow-hidden text-[#181811] dark:text-white max-w-md mx-auto">
+    <style>
+        /* Custom Scrollbar for code blocks */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
 
-<!-- Session List View -->
-<div id="sessionListView" class="flex-1 overflow-y-auto w-full relative flex flex-col pb-4 px-2 sm:px-4 space-y-2">
-    <!-- Loading State -->
-    <div id="loadingState" class="flex flex-col items-center justify-center h-full gap-4">
-        <span class="material-symbols-outlined text-4xl animate-spin text-gray-400">progress_activity</span>
-        <p class="text-gray-500 dark:text-gray-400">Loading conversations...</p>
-    </div>
-    
-    <!-- Empty State -->
-    <div id="emptyState" class="hidden flex-col items-center justify-center h-full gap-4 text-center px-8">
-        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">chat_bubble_outline</span>
-        <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-400">No Conversations Yet</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-500">Start a chat in Kiro or Cursor to see your AI conversations here.</p>
-    </div>
-    
-    <!-- Session Cards Container -->
-    <div id="sessionList" class="hidden space-y-2 pt-4"></div>
-</div>
+        .code-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
 
-<!-- Conversation Detail View -->
-<div id="conversationView" class="hidden flex-1 overflow-y-auto w-full relative flex flex-col pb-4 px-2 sm:px-4 space-y-2 scroll-smooth">
-    <!-- Messages will be rendered here -->
-</div>
+        .code-scroll::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
 
-<!-- Reconnection Banner -->
-<div id="reconnectBanner" class="hidden fixed top-16 left-0 right-0 bg-yellow-500 text-black px-4 py-2 text-center text-sm font-medium z-30 max-w-md mx-auto">
-    <span class="material-symbols-outlined text-sm align-middle mr-1">wifi_off</span>
-    Connection lost. Reconnecting<span id="reconnectDots">...</span>
-</div>
+        .code-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-<!-- Floating Action Button for New Chat -->
-<div id="fabContainer" class="fixed bottom-24 right-4 z-10">
-    <button onclick="showSessionList()" class="shadow-lg flex items-center justify-center size-12 bg-white dark:bg-gray-800 text-[#181811] dark:text-white rounded-full border border-gray-200 dark:border-gray-700">
-        <span class="material-symbols-outlined">forum</span>
-    </button>
-</div>
+        body {
+            min-height: max(884px, 100dvh);
+        }
 
-<!-- Sticky Input Area (shown in conversation view) -->
-<div id="inputArea" class="hidden flex-none w-full bg-background-light dark:bg-background-dark p-2 pb-4 sm:p-4 z-20 border-t border-gray-100 dark:border-gray-800">
-    <div class="relative flex items-end gap-2 bg-white dark:bg-[#1a1a1a] p-2 rounded-[1.5rem] shadow-lg border border-gray-100 dark:border-gray-800">
-        <button class="flex-none flex items-center justify-center size-10 rounded-full text-gray-400 hover:text-[#181811] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-            <span class="material-symbols-outlined">add_circle</span>
-        </button>
-        <div class="flex-1 min-w-0 py-2">
-            <textarea class="w-full bg-transparent border-none focus:ring-0 p-0 text-[#181811] dark:text-white placeholder-gray-400 font-display text-base resize-none max-h-32" placeholder="Ask TerminalWON..." rows="1" style="min-height: 24px;" disabled></textarea>
-            <div class="flex gap-2 mt-1">
-                <button class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-xs font-mono text-gray-500 hover:text-indigo-500 transition-colors">
-                    <span class="opacity-50">/</span>cmd
-                </button>
-                <button class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-xs font-mono text-gray-500 hover:text-indigo-500 transition-colors">
-                    <span class="opacity-50">@</span>file
-                </button>
-            </div>
-        </div>
-        <div class="flex-none flex items-center gap-2 pb-1">
-            <div class="hidden sm:flex px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
-                <span id="modelBadge" class="text-[10px] font-bold text-gray-500 uppercase tracking-wide">AI</span>
-            </div>
-            <button class="flex items-center justify-center size-10 rounded-full bg-primary text-black hover:bg-primary/90 transition-colors shadow-sm opacity-50" disabled>
-                <span class="material-symbols-outlined">arrow_upward</span>
-            </button>
-        </div>
-    </div>
-</div>
+        /* IDE badges */
+        .badge-kiro {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
 
-<script>
-// ============================================
-// State Management
-// ============================================
-let ws = null;
-let sessions = [];
-let currentSession = null;
-let currentFilter = 'all';
-let isConnected = false;
-let reconnectAttempts = 0;
-let reconnectTimeout = null;
-const MAX_RECONNECT_DELAY = 30000;
-const BASE_RECONNECT_DELAY = 1000;
+        .badge-cursor {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
 
-// ============================================
-// WebSocket Connection Management
-// ============================================
-function connect() {
-    if (ws && ws.readyState === WebSocket.OPEN) return;
-    
-    try {
-        ws = new WebSocket('ws://localhost:3002');
-        
-        ws.onopen = () => {
-            console.log('AI Conversations: Connected to TerminalWON Hub');
-            isConnected = true;
-            reconnectAttempts = 0;
-            updateConnectionStatus('connected');
-            hideReconnectBanner();
-            
-            // Send authentication
-            ws.send(JSON.stringify({
-                type: 'auth',
-                payload: {
-                    tool: 'mobile-pwa-ai',
-                    platform: 'browser',
-                    apiKey: 'test-key-123'
-                },
-                timestamp: new Date().toISOString(),
-                messageId: `ai-${Date.now()}`
-            }));
-            
-            // Subscribe to chat updates
-            ws.send(JSON.stringify({
-                type: 'chat.subscribe',
-                timestamp: new Date().toISOString(),
-                messageId: `sub-${Date.now()}`
-            }));
-            
-            // Fetch session list
-            fetchSessions();
-            
-            // If a specific session was requested via URL parameter, load it
-            if (pendingSessionId) {
-                setTimeout(() => {
-                    fetchSession(pendingSessionId);
-                    showConversationView();
-                    pendingSessionId = null;
-                }, 300);
+        .badge-antigravity {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        /* Message animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
-        };
-        
-        ws.onmessage = (event) => {
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-animate {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Connection status pulse */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .status-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Copy button feedback */
+        .copy-success {
+            background: #10b981 !important;
+        }
+
+        /* Agent Timeline Events */
+        @keyframes timelineSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .timeline-event {
+            animation: timelineSlide 0.4s ease-out;
+        }
+
+        .timeline-event:hover {
+            transform: translateY(-1px);
+        }
+
+        .timeline-pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+
+    <!-- Top Navigation Bar -->
+    <header
+        class="flex-none flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between z-20 border-b border-gray-200 dark:border-gray-800">
+        <button onclick="goBack()"
+            class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-[#181811] dark:text-white">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="flex flex-col items-center flex-1 mx-2">
+            <h2 id="headerTitle"
+                class="text-[#181811] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI
+                Conversations</h2>
+            <div id="connectionStatus" class="flex items-center gap-1 opacity-60">
+                <span id="statusDot" class="size-2 rounded-full bg-yellow-500 block status-pulse"></span>
+                <span id="statusText" class="text-xs font-medium">Connecting...</span>
+            </div>
+        </div>
+        <div class="flex items-center justify-end gap-1">
+            <!-- IDE Filter Dropdown -->
+            <div class="relative">
+                <button id="filterBtn" onclick="toggleFilterDropdown()"
+                    class="flex items-center justify-center rounded-full size-10 bg-transparent text-[#181811] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                    <span class="material-symbols-outlined">filter_list</span>
+                </button>
+                <div id="filterDropdown"
+                    class="hidden absolute right-0 top-12 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-[140px] z-30">
+                    <button onclick="setFilter('all')"
+                        class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        data-filter="all">
+                        <span class="material-symbols-outlined text-base">apps</span> All IDEs
+                    </button>
+                    <button onclick="setFilter('kiro')"
+                        class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        data-filter="kiro">
+                        <span class="size-3 rounded-full badge-kiro"></span> Kiro
+                    </button>
+                    <button onclick="setFilter('cursor')"
+                        class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        data-filter="cursor">
+                        <span class="size-3 rounded-full badge-cursor"></span> Cursor
+                    </button>
+                    <button onclick="setFilter('antigravity')"
+                        class="filter-option w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                        data-filter="antigravity">
+                        <span class="size-3 rounded-full badge-antigravity"></span> Antigravity
+                    </button>
+                </div>
+            </div>
+            <button onclick="toggleView()"
+                class="flex items-center justify-center rounded-full size-10 bg-transparent text-[#181811] dark:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                <span id="viewIcon" class="material-symbols-outlined">list</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Session List View -->
+    <div id="sessionListView" class="flex-1 overflow-y-auto w-full relative flex flex-col pb-4 px-2 sm:px-4 space-y-2">
+        <!-- Loading State -->
+        <div id="loadingState" class="flex flex-col items-center justify-center h-full gap-4">
+            <span class="material-symbols-outlined text-4xl animate-spin text-gray-400">progress_activity</span>
+            <p class="text-gray-500 dark:text-gray-400">Loading conversations...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center h-full gap-4 text-center px-8">
+            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">chat_bubble_outline</span>
+            <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-400">No Conversations Yet</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-500">Start a chat in Kiro or Cursor to see your AI
+                conversations here.</p>
+        </div>
+
+        <!-- Session Cards Container -->
+        <div id="sessionList" class="hidden space-y-2 pt-4"></div>
+    </div>
+
+    <!-- Conversation Detail View -->
+    <div id="conversationView"
+        class="hidden flex-1 overflow-y-auto w-full relative flex flex-col pb-4 px-2 sm:px-4 space-y-2 scroll-smooth">
+        <!-- Agent Timeline Container (shows above messages) -->
+        <div id="agentTimeline"
+            class="hidden flex flex-col gap-2 p-2 bg-gradient-to-b from-amber-50 to-transparent dark:from-amber-900/20 dark:to-transparent rounded-xl mb-2">
+            <div
+                class="flex items-center gap-2 text-xs font-medium text-amber-700 dark:text-amber-300 uppercase tracking-wide">
+                <span class="material-symbols-outlined text-sm timeline-pulse">smart_toy</span>
+                Agent Insights
+            </div>
+            <div id="timelineEvents" class="flex flex-col gap-2"></div>
+        </div>
+        <!-- Messages will be rendered here -->
+    </div>
+
+    <!-- Reconnection Banner -->
+    <div id="reconnectBanner"
+        class="hidden fixed top-16 left-0 right-0 bg-yellow-500 text-black px-4 py-2 text-center text-sm font-medium z-30 max-w-md mx-auto">
+        <span class="material-symbols-outlined text-sm align-middle mr-1">wifi_off</span>
+        Connection lost. Reconnecting<span id="reconnectDots">...</span>
+    </div>
+
+    <!-- Floating Action Button for New Chat -->
+    <div id="fabContainer" class="fixed bottom-24 right-4 z-10">
+        <button onclick="showSessionList()"
+            class="shadow-lg flex items-center justify-center size-12 bg-white dark:bg-gray-800 text-[#181811] dark:text-white rounded-full border border-gray-200 dark:border-gray-700">
+            <span class="material-symbols-outlined">forum</span>
+        </button>
+    </div>
+
+    <!-- Sticky Input Area (shown in conversation view) -->
+    <div id="inputArea"
+        class="hidden flex-none w-full bg-background-light dark:bg-background-dark p-2 pb-4 sm:p-4 z-20 border-t border-gray-100 dark:border-gray-800">
+        <!-- Chat Mode Toggle -->
+        <div class="flex items-center justify-center gap-2 mb-2 text-xs">
+            <button id="modeDirectAI" onclick="setChatMode('direct')"
+                class="px-3 py-1 rounded-full bg-primary text-black font-medium">Direct AI</button>
+            <button id="modeContinueIDE" onclick="setChatMode('ide')"
+                class="px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">Continue in
+                IDE</button>
+        </div>
+        <div
+            class="relative flex items-end gap-2 bg-white dark:bg-[#1a1a1a] p-2 rounded-[1.5rem] shadow-lg border border-gray-100 dark:border-gray-800">
+            <button
+                class="flex-none flex items-center justify-center size-10 rounded-full text-gray-400 hover:text-[#181811] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <span class="material-symbols-outlined">add_circle</span>
+            </button>
+            <div class="flex-1 min-w-0 py-2">
+                <textarea id="chatInput"
+                    class="w-full bg-transparent border-none focus:ring-0 p-0 text-[#181811] dark:text-white placeholder-gray-400 font-display text-base resize-none max-h-32"
+                    placeholder="Ask TerminalWON..." rows="1" style="min-height: 24px;"
+                    onkeydown="handleChatKeydown(event)"></textarea>
+                <div class="flex gap-2 mt-1">
+                    <button
+                        class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-xs font-mono text-gray-500 hover:text-indigo-500 transition-colors">
+                        <span class="opacity-50">/</span>cmd
+                    </button>
+                    <button
+                        class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-xs font-mono text-gray-500 hover:text-indigo-500 transition-colors">
+                        <span class="opacity-50">@</span>file
+                    </button>
+                </div>
+            </div>
+            <div class="flex-none flex items-center gap-2 pb-1">
+                <div
+                    class="hidden sm:flex px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700">
+                    <span id="modelBadge" class="text-[10px] font-bold text-gray-500 uppercase tracking-wide">AI</span>
+                </div>
+                <button id="sendBtn" onclick="sendChatMessage()"
+                    class="flex items-center justify-center size-10 rounded-full bg-primary text-black hover:bg-primary/90 transition-colors shadow-sm">
+                    <span class="material-symbols-outlined">arrow_upward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // State Management
+        // ============================================
+        let ws = null;
+        let sessions = [];
+        let currentSession = null;
+        let currentFilter = 'all';
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        let reconnectTimeout = null;
+        const MAX_RECONNECT_DELAY = 30000;
+        const BASE_RECONNECT_DELAY = 1000;
+
+        // Chat input state
+        let chatMode = 'direct'; // 'direct' or 'ide'
+        let isSending = false;
+
+        // ============================================
+        // Chat Input Functions
+        // ============================================
+        function setChatMode(mode) {
+            chatMode = mode;
+            const directBtn = document.getElementById('modeDirectAI');
+            const ideBtn = document.getElementById('modeContinueIDE');
+
+            if (mode === 'direct') {
+                directBtn.className = 'px-3 py-1 rounded-full bg-primary text-black font-medium';
+                ideBtn.className = 'px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300';
+            } else {
+                directBtn.className = 'px-3 py-1 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300';
+                ideBtn.className = 'px-3 py-1 rounded-full bg-primary text-black font-medium';
+            }
+        }
+
+        function handleChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message || isSending || !currentSession) return;
+
+            isSending = true;
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.style.opacity = '0.5';
+
+            // Add user message to UI immediately
+            addMessageToUI('user', message);
+            input.value = '';
+
+            if (chatMode === 'direct') {
+                // Send to AI provider directly
+                ws.send(JSON.stringify({
+                    type: 'chat.send',
+                    payload: {
+                        sessionId: currentSession.id,
+                        message,
+                        mode: 'direct'
+                    },
+                    timestamp: new Date().toISOString(),
+                    messageId: `chat-${Date.now()}`
+                }));
+            } else {
+                // Use computer-use to continue in IDE
+                ws.send(JSON.stringify({
+                    type: 'agent.chat.continue',
+                    payload: {
+                        sessionId: currentSession.id,
+                        instructions: message
+                    },
+                    timestamp: new Date().toISOString(),
+                    messageId: `continue-${Date.now()}`
+                }));
+
+                // Show pending message
+                addMessageToUI('assistant', '⏳ Continuing conversation in IDE...', true);
+            }
+        }
+
+        function addMessageToUI(role, content, isPending = false) {
+            const messagesContainer = document.querySelector('#conversationMessages');
+            if (!messagesContainer) return;
+
+            const isUser = role === 'user';
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'} ${isPending ? 'pending-message' : ''}`;
+            messageDiv.innerHTML = `
+                <div class="max-w-[85%] ${isUser ? 'order-2' : ''} flex gap-2">
+                    ${!isUser ? '<div class="size-8 shrink-0 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">AI</div>' : ''}
+                    <div class="px-4 py-3 rounded-2xl ${isUser ? 'bg-primary text-black rounded-tr-md' : 'bg-white dark:bg-[#1a1a1a] text-[#181811] dark:text-white rounded-tl-md'} shadow-sm">
+                        <p class="text-sm whitespace-pre-wrap">${escapeHtml(content)}</p>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // WebSocket Connection Management
+        // ============================================
+        function connect() {
+            if (ws && ws.readyState === WebSocket.OPEN) return;
+
             try {
-                const message = JSON.parse(event.data);
-                handleMessage(message);
-            } catch (e) {
-                console.error('Error parsing message:', e);
+                ws = new WebSocket('ws://localhost:3002');
+
+                ws.onopen = () => {
+                    console.log('AI Conversations: Connected to TerminalWON Hub');
+                    isConnected = true;
+                    reconnectAttempts = 0;
+                    updateConnectionStatus('connected');
+                    hideReconnectBanner();
+
+                    // Send authentication
+                    ws.send(JSON.stringify({
+                        type: 'auth',
+                        payload: {
+                            tool: 'mobile-pwa-ai',
+                            platform: 'browser',
+                            apiKey: 'test-key-123'
+                        },
+                        timestamp: new Date().toISOString(),
+                        messageId: `ai-${Date.now()}`
+                    }));
+
+                    // Subscribe to chat updates
+                    ws.send(JSON.stringify({
+                        type: 'chat.subscribe',
+                        timestamp: new Date().toISOString(),
+                        messageId: `sub-${Date.now()}`
+                    }));
+
+                    // Fetch session list
+                    fetchSessions();
+
+                    // If a specific session was requested via URL parameter, load it
+                    if (pendingSessionId) {
+                        setTimeout(() => {
+                            fetchSession(pendingSessionId);
+                            showConversationView();
+                            pendingSessionId = null;
+                        }, 300);
+                    }
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        handleMessage(message);
+                    } catch (e) {
+                        console.error('Error parsing message:', e);
+                    }
+                };
+
+                ws.onclose = () => {
+                    console.log('AI Conversations: Disconnected from hub');
+                    isConnected = false;
+                    updateConnectionStatus('disconnected');
+                    scheduleReconnect();
+                };
+
+                ws.onerror = (error) => {
+                    console.error('AI Conversations WebSocket error:', error);
+                    isConnected = false;
+                    updateConnectionStatus('error');
+                };
+
+            } catch (error) {
+                console.error('AI Conversations connection failed:', error);
+                isConnected = false;
+                updateConnectionStatus('error');
+                scheduleReconnect();
             }
-        };
-        
-        ws.onclose = () => {
-            console.log('AI Conversations: Disconnected from hub');
-            isConnected = false;
-            updateConnectionStatus('disconnected');
-            scheduleReconnect();
-        };
-        
-        ws.onerror = (error) => {
-            console.error('AI Conversations WebSocket error:', error);
-            isConnected = false;
-            updateConnectionStatus('error');
-        };
-        
-    } catch (error) {
-        console.error('AI Conversations connection failed:', error);
-        isConnected = false;
-        updateConnectionStatus('error');
-        scheduleReconnect();
-    }
-}
+        }
 
-function scheduleReconnect() {
-    if (reconnectTimeout) clearTimeout(reconnectTimeout);
-    
-    reconnectAttempts++;
-    const delay = Math.min(BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts - 1), MAX_RECONNECT_DELAY);
-    
-    showReconnectBanner();
-    console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts})`);
-    
-    reconnectTimeout = setTimeout(connect, delay);
-}
+        function scheduleReconnect() {
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
 
-function updateConnectionStatus(status) {
-    const dot = document.getElementById('statusDot');
-    const text = document.getElementById('statusText');
-    
-    switch (status) {
-        case 'connected':
-            dot.className = 'size-2 rounded-full bg-green-500 block';
-            text.textContent = 'Online';
-            break;
-        case 'disconnected':
-            dot.className = 'size-2 rounded-full bg-red-500 block status-pulse';
-            text.textContent = 'Offline';
-            break;
-        case 'error':
-            dot.className = 'size-2 rounded-full bg-red-500 block';
-            text.textContent = 'Error';
-            break;
-        default:
-            dot.className = 'size-2 rounded-full bg-yellow-500 block status-pulse';
-            text.textContent = 'Connecting...';
-    }
-}
+            reconnectAttempts++;
+            const delay = Math.min(BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts - 1), MAX_RECONNECT_DELAY);
 
-function showReconnectBanner() {
-    document.getElementById('reconnectBanner').classList.remove('hidden');
-    animateReconnectDots();
-}
+            showReconnectBanner();
+            console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts})`);
 
-function hideReconnectBanner() {
-    document.getElementById('reconnectBanner').classList.add('hidden');
-}
+            reconnectTimeout = setTimeout(connect, delay);
+        }
 
-let dotsInterval = null;
-function animateReconnectDots() {
-    if (dotsInterval) clearInterval(dotsInterval);
-    let dots = 0;
-    dotsInterval = setInterval(() => {
-        dots = (dots + 1) % 4;
-        document.getElementById('reconnectDots').textContent = '.'.repeat(dots || 1);
-    }, 500);
-}
+        function updateConnectionStatus(status) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
 
-// ============================================
-// Message Handling
-// ============================================
-function handleMessage(message) {
-    console.log('AI Conversations received:', message.type);
-    
-    switch (message.type) {
-        case 'chat.sessions':
-            handleSessionsList(message.payload.sessions);
-            break;
-        case 'chat.session':
-            handleSessionDetail(message.payload.session);
-            break;
-        case 'chat.message.new':
-            handleNewMessage(message.payload);
-            break;
-        case 'chat.subscribed':
-            console.log('Subscribed to chat updates:', message.payload.success);
-            break;
-        case 'chat.session.error':
-            console.error('Session error:', message.payload.error);
-            break;
-    }
-}
+            switch (status) {
+                case 'connected':
+                    dot.className = 'size-2 rounded-full bg-green-500 block';
+                    text.textContent = 'Online';
+                    break;
+                case 'disconnected':
+                    dot.className = 'size-2 rounded-full bg-red-500 block status-pulse';
+                    text.textContent = 'Offline';
+                    break;
+                case 'error':
+                    dot.className = 'size-2 rounded-full bg-red-500 block';
+                    text.textContent = 'Error';
+                    break;
+                default:
+                    dot.className = 'size-2 rounded-full bg-yellow-500 block status-pulse';
+                    text.textContent = 'Connecting...';
+            }
+        }
 
-function handleSessionsList(sessionList) {
-    sessions = sessionList || [];
-    renderSessionList();
-}
+        function showReconnectBanner() {
+            document.getElementById('reconnectBanner').classList.remove('hidden');
+            animateReconnectDots();
+        }
 
-function handleSessionDetail(session) {
-    currentSession = session;
-    renderConversation();
-}
+        function hideReconnectBanner() {
+            document.getElementById('reconnectBanner').classList.add('hidden');
+        }
 
-function handleNewMessage(payload) {
-    const { sessionId, sourceIDE, message } = payload;
-    
-    // Update session in list
-    const sessionIndex = sessions.findIndex(s => s.id === sessionId);
-    if (sessionIndex !== -1) {
-        sessions[sessionIndex].messageCount = (sessions[sessionIndex].messageCount || 0) + 1;
-        sessions[sessionIndex].lastActivity = message.timestamp;
-    }
-    
-    // If viewing this session, append the message
-    if (currentSession && currentSession.id === sessionId) {
-        if (!currentSession.messages) currentSession.messages = [];
-        currentSession.messages.push(message);
-        appendMessage(message);
-        scrollToBottom();
-    }
-    
-    // Re-render session list to update counts
-    renderSessionList();
-}
+        let dotsInterval = null;
+        function animateReconnectDots() {
+            if (dotsInterval) clearInterval(dotsInterval);
+            let dots = 0;
+            dotsInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                document.getElementById('reconnectDots').textContent = '.'.repeat(dots || 1);
+            }, 500);
+        }
 
-// ============================================
-// API Calls
-// ============================================
-function fetchSessions() {
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    
-    ws.send(JSON.stringify({
-        type: 'chat.sessions.list',
-        timestamp: new Date().toISOString(),
-        messageId: `list-${Date.now()}`
-    }));
-}
+        // ============================================
+        // Message Handling
+        // ============================================
+        function handleMessage(message) {
+            console.log('AI Conversations received:', message.type);
 
-function fetchSession(sessionId) {
-    if (!ws || ws.readyState !== WebSocket.OPEN) return;
-    
-    ws.send(JSON.stringify({
-        type: 'chat.session.get',
-        payload: { sessionId },
-        timestamp: new Date().toISOString(),
-        messageId: `get-${Date.now()}`
-    }));
-}
+            switch (message.type) {
+                case 'chat.sessions':
+                    handleSessionsList(message.payload.sessions);
+                    break;
+                case 'chat.session':
+                    handleSessionDetail(message.payload.session);
+                    break;
+                case 'chat.message.new':
+                    handleNewMessage(message.payload);
+                    break;
+                case 'chat.subscribed':
+                    console.log('Subscribed to chat updates:', message.payload.success);
+                    break;
+                case 'chat.session.error':
+                    console.error('Session error:', message.payload.error);
+                    break;
 
-// ============================================
-// Rendering Functions
-// ============================================
-function renderSessionList() {
-    const loadingState = document.getElementById('loadingState');
-    const emptyState = document.getElementById('emptyState');
-    const sessionList = document.getElementById('sessionList');
-    
-    // Filter sessions
-    const filteredSessions = currentFilter === 'all' 
-        ? sessions 
-        : sessions.filter(s => s.sourceIDE === currentFilter);
-    
-    loadingState.classList.add('hidden');
-    
-    if (filteredSessions.length === 0) {
-        emptyState.classList.remove('hidden');
-        emptyState.classList.add('flex');
-        sessionList.classList.add('hidden');
-        return;
-    }
-    
-    emptyState.classList.add('hidden');
-    emptyState.classList.remove('flex');
-    sessionList.classList.remove('hidden');
-    
-    sessionList.innerHTML = filteredSessions.map(session => `
+                // Agent timeline events
+                case 'agent.timeline':
+                    handleAgentTimelineEvent(message.payload);
+                    break;
+                case 'agent.status':
+                    console.log('Agent status:', message.payload);
+                    break;
+                case 'agent.suggest.applied':
+                    console.log('Suggestion applied:', message.payload);
+                    break;
+
+                // Chat send/response handlers
+                case 'chat.sending':
+                    // Acknowledgment that message is being processed
+                    console.log('Chat message being processed...');
+                    break;
+
+                case 'chat.response':
+                    // AI response received
+                    isSending = false;
+                    const sendBtn = document.getElementById('sendBtn');
+                    if (sendBtn) {
+                        sendBtn.disabled = false;
+                        sendBtn.style.opacity = '1';
+                    }
+
+                    // Remove pending messages
+                    document.querySelectorAll('.pending-message').forEach(el => el.remove());
+
+                    if (message.payload.error) {
+                        addMessageToUI('assistant', `⚠️ ${message.payload.error}`);
+                    } else {
+                        addMessageToUI('assistant', message.payload.content);
+                        // Update model badge
+                        const badge = document.getElementById('modelBadge');
+                        if (badge && message.payload.model) {
+                            badge.textContent = message.payload.model.split('-')[0].toUpperCase();
+                        }
+                    }
+                    break;
+
+                case 'agent.chat.continue.complete':
+                    // Computer-use continuation completed
+                    isSending = false;
+                    const continueBtn = document.getElementById('sendBtn');
+                    if (continueBtn) {
+                        continueBtn.disabled = false;
+                        continueBtn.style.opacity = '1';
+                    }
+
+                    // Remove pending messages
+                    document.querySelectorAll('.pending-message').forEach(el => el.remove());
+
+                    if (message.payload.success) {
+                        addMessageToUI('assistant', `✅ Conversation continued in IDE. ${message.payload.result || ''}`);
+                    } else {
+                        addMessageToUI('assistant', `⚠️ Could not continue in IDE: ${message.payload.error || 'Unknown error'}`);
+                    }
+                    break;
+            }
+        }
+
+        function handleSessionsList(sessionList) {
+            sessions = sessionList || [];
+            renderSessionList();
+        }
+
+        function handleSessionDetail(session) {
+            currentSession = session;
+            renderConversation();
+        }
+
+        function handleNewMessage(payload) {
+            const { sessionId, sourceIDE, message } = payload;
+
+            // Update session in list
+            const sessionIndex = sessions.findIndex(s => s.id === sessionId);
+            if (sessionIndex !== -1) {
+                sessions[sessionIndex].messageCount = (sessions[sessionIndex].messageCount || 0) + 1;
+                sessions[sessionIndex].lastActivity = message.timestamp;
+            }
+
+            // If viewing this session, append the message
+            if (currentSession && currentSession.id === sessionId) {
+                if (!currentSession.messages) currentSession.messages = [];
+                currentSession.messages.push(message);
+                appendMessage(message);
+                scrollToBottom();
+            }
+
+            // Re-render session list to update counts
+            renderSessionList();
+        }
+
+        // Agent Timeline Event Handling
+        const agentEvents = [];
+        const MAX_TIMELINE_EVENTS = 5;
+
+        function handleAgentTimelineEvent(event) {
+            console.log('Agent event:', event);
+
+            // Add to events array
+            agentEvents.unshift(event);
+            if (agentEvents.length > MAX_TIMELINE_EVENTS) {
+                agentEvents.pop();
+            }
+
+            // Render timeline
+            renderAgentTimeline();
+        }
+
+        function renderAgentTimeline() {
+            const timeline = document.getElementById('agentTimeline');
+            const eventsContainer = document.getElementById('timelineEvents');
+
+            if (agentEvents.length === 0) {
+                timeline.classList.add('hidden');
+                return;
+            }
+
+            timeline.classList.remove('hidden');
+            eventsContainer.innerHTML = agentEvents.map(event => renderTimelineEvent(event)).join('');
+        }
+
+        function renderTimelineEvent(event) {
+            const { id, type, data, timestamp, terminalId } = event;
+            const time = formatTime(timestamp);
+
+            switch (type) {
+                case 'error_detected':
+                    return `
+                <div class="timeline-event bg-red-50 dark:bg-red-900/30 rounded-lg p-3 border border-red-200 dark:border-red-800">
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-red-500 text-lg">error</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-red-700 dark:text-red-300">${escapeHtml(data.errorType || 'Error')} Detected</span>
+                                <span class="text-[10px] text-red-400">${time}</span>
+                            </div>
+                            <p class="text-sm text-red-600 dark:text-red-400 mt-1">${escapeHtml(data.summary || 'An error occurred')}</p>
+                            ${data.explanation ? `<p class="text-xs text-red-500/80 mt-1">${escapeHtml(data.explanation.slice(0, 150))}${data.explanation.length > 150 ? '...' : ''}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+                case 'command_suggested':
+                    return `
+                <div class="timeline-event bg-blue-50 dark:bg-blue-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-blue-500 text-lg">terminal</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-blue-700 dark:text-blue-300">Suggested Fix</span>
+                                <span class="text-[10px] text-blue-400">${time}</span>
+                            </div>
+                            ${data.context ? `<p class="text-xs text-blue-500/80 mt-1">${escapeHtml(data.context)}</p>` : ''}
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                ${(data.commands || []).slice(0, 3).map(cmd => `
+                                    <button onclick="applySuggestion('${terminalId}', '${escapeHtml(cmd)}')"
+                                        class="flex items-center gap-1 px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-mono rounded transition-colors">
+                                        <span class="material-symbols-outlined text-sm">play_arrow</span>
+                                        ${escapeHtml(cmd.length > 30 ? cmd.slice(0, 30) + '...' : cmd)}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+                case 'explanation':
+                    return `
+                <div class="timeline-event bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-gray-500 text-lg">info</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Agent Insight</span>
+                                <span class="text-[10px] text-gray-400">${time}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${escapeHtml(data.content || data.explanation || 'No details')}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+                case 'action_taken':
+                    return `
+                <div class="timeline-event bg-green-50 dark:bg-green-900/30 rounded-lg p-3 border border-green-200 dark:border-green-800">
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-green-500 text-lg">check_circle</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-green-700 dark:text-green-300">Action Taken</span>
+                                <span class="text-[10px] text-green-400">${time}</span>
+                            </div>
+                            <p class="text-sm text-green-600 dark:text-green-400 mt-1">
+                                ${data.action === 'apply_command' ? `Applied: <code class="font-mono bg-green-100 dark:bg-green-800 px-1 rounded">${escapeHtml(data.command)}</code>` : escapeHtml(data.action || 'Completed')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+                default:
+                    return `
+                <div class="timeline-event bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-gray-400 text-lg">timeline</span>
+                        <span class="text-sm text-gray-500">${escapeHtml(type)}: ${JSON.stringify(data).slice(0, 50)}</span>
+                    </div>
+                </div>
+            `;
+            }
+        }
+
+        function applySuggestion(terminalId, command) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                console.error('WebSocket not connected');
+                return;
+            }
+
+            ws.send(JSON.stringify({
+                type: 'agent.suggest.apply',
+                payload: { terminalId, command },
+                timestamp: new Date().toISOString(),
+                messageId: `apply-${Date.now()}`
+            }));
+
+            console.log(`Applying suggestion: ${command} to terminal ${terminalId}`);
+        }
+
+        function clearAgentTimeline() {
+            agentEvents.length = 0;
+            renderAgentTimeline();
+        }
+
+        // ============================================
+        // API Calls
+        // ============================================
+        function fetchSessions() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+            ws.send(JSON.stringify({
+                type: 'chat.sessions.list',
+                timestamp: new Date().toISOString(),
+                messageId: `list-${Date.now()}`
+            }));
+        }
+
+        function fetchSession(sessionId) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+            ws.send(JSON.stringify({
+                type: 'chat.session.get',
+                payload: { sessionId },
+                timestamp: new Date().toISOString(),
+                messageId: `get-${Date.now()}`
+            }));
+        }
+
+        // ============================================
+        // Rendering Functions
+        // ============================================
+        function renderSessionList() {
+            const loadingState = document.getElementById('loadingState');
+            const emptyState = document.getElementById('emptyState');
+            const sessionList = document.getElementById('sessionList');
+
+            // Filter sessions
+            const filteredSessions = currentFilter === 'all'
+                ? sessions
+                : sessions.filter(s => s.sourceIDE === currentFilter);
+
+            loadingState.classList.add('hidden');
+
+            if (filteredSessions.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                sessionList.classList.add('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+            sessionList.classList.remove('hidden');
+
+            sessionList.innerHTML = filteredSessions.map(session => `
         <div onclick="selectSession('${session.id}')" class="bg-white dark:bg-gray-800/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700 hover:border-primary/50 transition-all cursor-pointer shadow-sm hover:shadow-md">
             <div class="flex items-start gap-3">
                 <div class="flex items-center justify-center size-10 rounded-full ${session.sourceIDE === 'kiro' ? 'badge-kiro' : 'badge-cursor'} text-white shrink-0">
@@ -446,48 +882,48 @@ function renderSessionList() {
             </div>
         </div>
     `).join('');
-}
+        }
 
-function renderConversation() {
-    if (!currentSession) return;
-    
-    const conversationView = document.getElementById('conversationView');
-    const headerTitle = document.getElementById('headerTitle');
-    
-    headerTitle.textContent = currentSession.title || 'Conversation';
-    
-    // Add timestamp separator
-    let html = `
+        function renderConversation() {
+            if (!currentSession) return;
+
+            const conversationView = document.getElementById('conversationView');
+            const headerTitle = document.getElementById('headerTitle');
+
+            headerTitle.textContent = currentSession.title || 'Conversation';
+
+            // Add timestamp separator
+            let html = `
         <div class="flex justify-center py-6">
             <span class="text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">
                 ${formatFullDate(currentSession.dateCreated)}
             </span>
         </div>
     `;
-    
-    // Render messages
-    const messages = currentSession.messages || [];
-    html += messages.map(msg => renderMessage(msg)).join('');
-    
-    // Add spacer for input area
-    html += '<div class="h-24"></div>';
-    
-    conversationView.innerHTML = html;
-    
-    // Apply syntax highlighting to code blocks
-    conversationView.querySelectorAll('pre code').forEach(block => {
-        hljs.highlightElement(block);
-    });
-    
-    scrollToBottom();
-}
 
-function renderMessage(message) {
-    const isUser = message.role === 'user';
-    const isSystem = message.role === 'system';
-    
-    if (isSystem) {
-        return `
+            // Render messages
+            const messages = currentSession.messages || [];
+            html += messages.map(msg => renderMessage(msg)).join('');
+
+            // Add spacer for input area
+            html += '<div class="h-24"></div>';
+
+            conversationView.innerHTML = html;
+
+            // Apply syntax highlighting to code blocks
+            conversationView.querySelectorAll('pre code').forEach(block => {
+                hljs.highlightElement(block);
+            });
+
+            scrollToBottom();
+        }
+
+        function renderMessage(message) {
+            const isUser = message.role === 'user';
+            const isSystem = message.role === 'system';
+
+            if (isSystem) {
+                return `
             <div class="flex gap-3 px-2 py-1 items-start opacity-70 message-animate">
                 <div class="flex items-center justify-center size-8 rounded-full bg-gray-200 dark:bg-gray-700 shrink-0 mt-1">
                     <span class="material-symbols-outlined text-sm text-gray-600 dark:text-gray-300">info</span>
@@ -497,10 +933,10 @@ function renderMessage(message) {
                 </div>
             </div>
         `;
-    }
-    
-    if (isUser) {
-        return `
+            }
+
+            if (isUser) {
+                return `
             <div class="group flex gap-3 px-2 py-2 message-animate">
                 <div class="relative shrink-0">
                     <div class="flex items-center justify-center size-8 rounded-full bg-indigo-500 text-white">
@@ -518,10 +954,10 @@ function renderMessage(message) {
                 </div>
             </div>
         `;
-    }
-    
-    // Assistant message
-    return `
+            }
+
+            // Assistant message
+            return `
         <div class="group flex gap-3 px-2 py-2 message-animate">
             <div class="relative shrink-0">
                 <div class="flex items-center justify-center size-8 rounded-full bg-black dark:bg-white text-white dark:text-black shrink-0 mt-1 shadow-sm">
@@ -540,49 +976,49 @@ function renderMessage(message) {
             </div>
         </div>
     `;
-}
+        }
 
-function appendMessage(message) {
-    const conversationView = document.getElementById('conversationView');
-    const spacer = conversationView.querySelector('.h-24');
-    
-    const messageHtml = renderMessage(message);
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = messageHtml;
-    
-    if (spacer) {
-        spacer.insertAdjacentHTML('beforebegin', messageHtml);
-    } else {
-        conversationView.insertAdjacentHTML('beforeend', messageHtml);
-    }
-    
-    // Apply syntax highlighting to new code blocks
-    conversationView.querySelectorAll('pre code:not(.hljs)').forEach(block => {
-        hljs.highlightElement(block);
-    });
-}
+        function appendMessage(message) {
+            const conversationView = document.getElementById('conversationView');
+            const spacer = conversationView.querySelector('.h-24');
 
-function renderMessageContent(content) {
-    if (!content) return '';
-    
-    // Parse markdown-style code blocks
-    const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
-    let result = content;
-    let match;
-    
-    // Replace code blocks with highlighted versions
-    const codeBlocks = [];
-    let index = 0;
-    
-    result = result.replace(codeBlockRegex, (match, lang, code) => {
-        const placeholder = `__CODE_BLOCK_${index}__`;
-        const language = lang || 'plaintext';
-        const escapedCode = escapeHtml(code.trim());
-        const blockId = `code-${Date.now()}-${index}`;
-        
-        codeBlocks.push({
-            placeholder,
-            html: `
+            const messageHtml = renderMessage(message);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = messageHtml;
+
+            if (spacer) {
+                spacer.insertAdjacentHTML('beforebegin', messageHtml);
+            } else {
+                conversationView.insertAdjacentHTML('beforeend', messageHtml);
+            }
+
+            // Apply syntax highlighting to new code blocks
+            conversationView.querySelectorAll('pre code:not(.hljs)').forEach(block => {
+                hljs.highlightElement(block);
+            });
+        }
+
+        function renderMessageContent(content) {
+            if (!content) return '';
+
+            // Parse markdown-style code blocks
+            const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
+            let result = content;
+            let match;
+
+            // Replace code blocks with highlighted versions
+            const codeBlocks = [];
+            let index = 0;
+
+            result = result.replace(codeBlockRegex, (match, lang, code) => {
+                const placeholder = `__CODE_BLOCK_${index}__`;
+                const language = lang || 'plaintext';
+                const escapedCode = escapeHtml(code.trim());
+                const blockId = `code-${Date.now()}-${index}`;
+
+                codeBlocks.push({
+                    placeholder,
+                    html: `
                 <div class="mt-2 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-code-bg shadow-sm">
                     <div class="flex items-center justify-between px-3 py-2 bg-[#2d2d2d] border-b border-white/10">
                         <span class="text-xs font-mono text-gray-300">${language}</span>
@@ -596,226 +1032,227 @@ function renderMessageContent(content) {
                     </div>
                 </div>
             `
-        });
-        index++;
-        return placeholder;
-    });
-    
-    // Escape remaining HTML and convert line breaks
-    result = escapeHtml(result);
-    result = result.replace(/\n/g, '<br>');
-    
-    // Handle inline code
-    result = result.replace(/`([^`]+)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 rounded text-sm text-pink-600 font-mono">$1</code>');
-    
-    // Restore code blocks
-    for (const block of codeBlocks) {
-        result = result.replace(block.placeholder, block.html);
-    }
-    
-    return `<div class="text-base text-[#181811] dark:text-gray-200 leading-relaxed">${result}</div>`;
-}
+                });
+                index++;
+                return placeholder;
+            });
 
-function copyCode(blockId) {
-    const codeElement = document.getElementById(blockId);
-    const copyBtn = document.getElementById(`copy-${blockId}`);
-    
-    if (codeElement) {
-        const text = codeElement.textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            // Show success feedback
-            copyBtn.classList.add('copy-success');
-            copyBtn.querySelector('.copy-text').textContent = 'Copied!';
-            
-            setTimeout(() => {
-                copyBtn.classList.remove('copy-success');
-                copyBtn.querySelector('.copy-text').textContent = 'Copy';
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy:', err);
-        });
-    }
-}
+            // Escape remaining HTML and convert line breaks
+            result = escapeHtml(result);
+            result = result.replace(/\n/g, '<br>');
 
-// ============================================
-// View Management
-// ============================================
-function selectSession(sessionId) {
-    fetchSession(sessionId);
-    showConversationView();
-}
+            // Handle inline code
+            result = result.replace(/`([^`]+)`/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 rounded text-sm text-pink-600 font-mono">$1</code>');
 
-function showSessionList() {
-    document.getElementById('sessionListView').classList.remove('hidden');
-    document.getElementById('conversationView').classList.add('hidden');
-    document.getElementById('inputArea').classList.add('hidden');
-    document.getElementById('fabContainer').classList.add('hidden');
-    document.getElementById('headerTitle').textContent = 'AI Conversations';
-    document.getElementById('viewIcon').textContent = 'list';
-    currentSession = null;
-}
+            // Restore code blocks
+            for (const block of codeBlocks) {
+                result = result.replace(block.placeholder, block.html);
+            }
 
-function showConversationView() {
-    document.getElementById('sessionListView').classList.add('hidden');
-    document.getElementById('conversationView').classList.remove('hidden');
-    document.getElementById('inputArea').classList.remove('hidden');
-    document.getElementById('inputArea').classList.add('flex');
-    document.getElementById('fabContainer').classList.remove('hidden');
-    document.getElementById('viewIcon').textContent = 'forum';
-}
-
-function toggleView() {
-    if (currentSession) {
-        showSessionList();
-    }
-}
-
-function scrollToBottom() {
-    const conversationView = document.getElementById('conversationView');
-    setTimeout(() => {
-        conversationView.scrollTop = conversationView.scrollHeight;
-    }, 100);
-}
-
-// ============================================
-// Filter Management
-// ============================================
-function toggleFilterDropdown() {
-    const dropdown = document.getElementById('filterDropdown');
-    dropdown.classList.toggle('hidden');
-}
-
-function setFilter(filter) {
-    currentFilter = filter;
-    document.getElementById('filterDropdown').classList.add('hidden');
-    
-    // Update active state
-    document.querySelectorAll('.filter-option').forEach(btn => {
-        const isActive = btn.dataset.filter === filter;
-        btn.classList.toggle('bg-gray-100', isActive);
-        btn.classList.toggle('dark:bg-gray-700', isActive);
-    });
-    
-    renderSessionList();
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-    const filterBtn = document.getElementById('filterBtn');
-    const dropdown = document.getElementById('filterDropdown');
-    
-    if (!filterBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.add('hidden');
-    }
-});
-
-// ============================================
-// Utility Functions
-// ============================================
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function formatDate(dateStr) {
-    if (!dateStr) return 'Unknown';
-    
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return 'Unknown';
-    
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function formatFullDate(dateStr) {
-    if (!dateStr) return 'Unknown';
-    
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return 'Unknown';
-    
-    const today = new Date();
-    const isToday = date.toDateString() === today.toDateString();
-    
-    if (isToday) {
-        return `Today, ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-    }
-    
-    return date.toLocaleDateString('en-US', { 
-        weekday: 'short',
-        month: 'short', 
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit'
-    });
-}
-
-function formatTime(dateStr) {
-    if (!dateStr) return '';
-    
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return '';
-    
-    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
-
-function goBack() {
-    if (currentSession) {
-        // If we came from the sessions page with a specific session, go back there
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('session')) {
-            window.location.href = 'mobile-ai-sessions.html';
-        } else {
-            showSessionList();
+            return `<div class="text-base text-[#181811] dark:text-gray-200 leading-relaxed">${result}</div>`;
         }
-    } else {
-        // Go to sessions list page
-        window.location.href = 'mobile-ai-sessions.html';
-    }
-}
 
-// ============================================
-// Initialization
-// ============================================
-window.onload = () => {
-    // Check for dark mode preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-    }
-    
-    // Check for session parameter in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('session');
-    
-    if (sessionId) {
-        // If session ID provided, open directly to that conversation
-        pendingSessionId = sessionId;
-    }
-    
-    // Connect to WebSocket
-    setTimeout(connect, 500);
-};
+        function copyCode(blockId) {
+            const codeElement = document.getElementById(blockId);
+            const copyBtn = document.getElementById(`copy-${blockId}`);
 
-// Pending session to load after connection
-let pendingSessionId = null;
+            if (codeElement) {
+                const text = codeElement.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    // Show success feedback
+                    copyBtn.classList.add('copy-success');
+                    copyBtn.querySelector('.copy-text').textContent = 'Copied!';
 
-// Handle visibility change to reconnect when tab becomes visible
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && !isConnected) {
-        connect();
-    }
-});
-</script>
+                    setTimeout(() => {
+                        copyBtn.classList.remove('copy-success');
+                        copyBtn.querySelector('.copy-text').textContent = 'Copy';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
+            }
+        }
+
+        // ============================================
+        // View Management
+        // ============================================
+        function selectSession(sessionId) {
+            fetchSession(sessionId);
+            showConversationView();
+        }
+
+        function showSessionList() {
+            document.getElementById('sessionListView').classList.remove('hidden');
+            document.getElementById('conversationView').classList.add('hidden');
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('fabContainer').classList.add('hidden');
+            document.getElementById('headerTitle').textContent = 'AI Conversations';
+            document.getElementById('viewIcon').textContent = 'list';
+            currentSession = null;
+        }
+
+        function showConversationView() {
+            document.getElementById('sessionListView').classList.add('hidden');
+            document.getElementById('conversationView').classList.remove('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('inputArea').classList.add('flex');
+            document.getElementById('fabContainer').classList.remove('hidden');
+            document.getElementById('viewIcon').textContent = 'forum';
+        }
+
+        function toggleView() {
+            if (currentSession) {
+                showSessionList();
+            }
+        }
+
+        function scrollToBottom() {
+            const conversationView = document.getElementById('conversationView');
+            setTimeout(() => {
+                conversationView.scrollTop = conversationView.scrollHeight;
+            }, 100);
+        }
+
+        // ============================================
+        // Filter Management
+        // ============================================
+        function toggleFilterDropdown() {
+            const dropdown = document.getElementById('filterDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.getElementById('filterDropdown').classList.add('hidden');
+
+            // Update active state
+            document.querySelectorAll('.filter-option').forEach(btn => {
+                const isActive = btn.dataset.filter === filter;
+                btn.classList.toggle('bg-gray-100', isActive);
+                btn.classList.toggle('dark:bg-gray-700', isActive);
+            });
+
+            renderSessionList();
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const filterBtn = document.getElementById('filterBtn');
+            const dropdown = document.getElementById('filterDropdown');
+
+            if (!filterBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // ============================================
+        // Utility Functions
+        // ============================================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Unknown';
+
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return 'Unknown';
+
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function formatFullDate(dateStr) {
+            if (!dateStr) return 'Unknown';
+
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return 'Unknown';
+
+            const today = new Date();
+            const isToday = date.toDateString() === today.toDateString();
+
+            if (isToday) {
+                return `Today, ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+            }
+
+            return date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+        }
+
+        function formatTime(dateStr) {
+            if (!dateStr) return '';
+
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '';
+
+            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+
+        function goBack() {
+            if (currentSession) {
+                // If we came from the sessions page with a specific session, go back there
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('session')) {
+                    window.location.href = 'mobile-ai-sessions.html';
+                } else {
+                    showSessionList();
+                }
+            } else {
+                // Go to sessions list page
+                window.location.href = 'mobile-ai-sessions.html';
+            }
+        }
+
+        // ============================================
+        // Initialization
+        // ============================================
+        window.onload = () => {
+            // Check for dark mode preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Check for session parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session');
+
+            if (sessionId) {
+                // If session ID provided, open directly to that conversation
+                pendingSessionId = sessionId;
+            }
+
+            // Connect to WebSocket
+            setTimeout(connect, 500);
+        };
+
+        // Pending session to load after connection
+        let pendingSessionId = null;
+
+        // Handle visibility change to reconnect when tab becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && !isConnected) {
+                connect();
+            }
+        });
+    </script>
 </body>
+
 </html>

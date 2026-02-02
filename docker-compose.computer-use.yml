@@ -1,0 +1,93 @@
+version: "3.8"
+
+# TerminalWON Computer-Use Agent Docker Configuration
+# This sets up an isolated environment for the Anthropic computer-use agent
+# that can take over chat continuation from IDE sessions.
+
+services:
+  computer-use-agent:
+    build:
+      context: ./docker/computer-use
+      dockerfile: Dockerfile
+    container_name: terminalwon-computer-use
+    
+    # Environment
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - TERMINALWON_HUB_URL=ws://host.docker.internal:3002
+      - DISPLAY=:99
+      - SCREEN_RESOLUTION=1920x1080x24
+      
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4G
+        reservations:
+          cpus: "0.5"
+          memory: 1G
+    
+    # Security: sandboxed network
+    networks:
+      - computer-use-net
+    
+    # Allow host.docker.internal on macOS/Windows
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
+    # VNC port for monitoring (optional)
+    ports:
+      - "5900:5900"
+    
+    # Health check
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -x python || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Volumes - mount for screenshots/recordings
+    volumes:
+      - computer-use-data:/app/data
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_ADMIN  # Required for screenshot capture
+    
+    # Command to start the agent
+    command: ["python", "-m", "computer_use_agent.main"]
+
+  # VNC web viewer (optional - for debugging)
+  vnc-viewer:
+    image: theasp/novnc:latest
+    container_name: terminalwon-vnc-viewer
+    environment:
+      - DISPLAY_WIDTH=1920
+      - DISPLAY_HEIGHT=1080
+    ports:
+      - "8080:8080"
+    networks:
+      - computer-use-net
+    depends_on:
+      - computer-use-agent
+    profiles:
+      - debug
+
+volumes:
+  computer-use-data:
+    name: terminalwon-computer-use-data
+
+networks:
+  computer-use-net:
+    driver: bridge
+    internal: false  # Allow internet access for API calls

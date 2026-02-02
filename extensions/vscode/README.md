@@ -1,8 +1,8 @@
 # TerminalWON - Remote Terminal Hub for Multi-IDE Workflows
 
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/terminalwon.terminalwon-vscode)](https://marketplace.visualstudio.com/items?itemName=terminalwon.terminalwon-vscode)
+[![Open VSX](https://img.shields.io/open-vsx/v/terminalwon/terminalwon-vscode)](https://open-vsx.org/extension/terminalwon/terminalwon-vscode)
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/terminalwon.terminalwon-vscode)](https://marketplace.visualstudio.com/items?itemName=terminalwon.terminalwon-vscode)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/terminalwon.terminalwon-vscode)](https://marketplace.visualstudio.com/items?itemName=terminalwon.terminalwon-vscode)
 
 > Monitor and control all your terminals from one dashboard. Works with Cursor, Claude Code, and more.
 
@@ -57,7 +57,7 @@ Are you tired of juggling terminals across Cursor, VSCode, Claude Code, Kiro, an
 
 ## 🚀 Quick Start
 
-1. **Install** TerminalWON extension in VSCode
+1. **Install** TerminalWON extension in your IDE
 2. **Sign up** at [terminalwon.com](https://terminalwon.com)
 3. **Connect** your first terminal (`Cmd+Shift+P` → "TerminalWON: Connect to Hub")
 4. **Access** from web, mobile, or desktop app
@@ -79,7 +79,7 @@ Are you tired of juggling terminals across Cursor, VSCode, Claude Code, Kiro, an
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `terminalwon.hubUrl` | `wss://hub.terminalwon.com` | TerminalWON Hub WebSocket URL |
+| `terminalwon.hubUrl` | `ws://localhost:3002` | TerminalWON Hub WebSocket URL |
 | `terminalwon.apiKey` | ` ` | Your TerminalWON API Key |
 | `terminalwon.autoConnect` | `true` | Automatically connect to hub on startup |
 | `terminalwon.shareByDefault` | `false` | Share new terminals by default |
@@ -125,7 +125,7 @@ Are you tired of juggling terminals across Cursor, VSCode, Claude Code, Kiro, an
 - 📖 [Documentation](https://docs.terminalwon.com)
 - 💬 [Discord Community](https://discord.gg/terminalwon)
 - 🐦 [Twitter @terminalwon](https://twitter.com/terminalwon)
-- 🐛 [Report Issues](https://github.com/terminalwon/terminalwon/issues)
+- 🐛 [Report Issues](https://github.com/jsodeh/terminalwon/issues)
 
 ---
 

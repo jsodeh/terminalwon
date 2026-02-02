@@ -1,0 +1,12 @@
+# Anthropic SDK for computer-use
+anthropic>=0.25.0
+
+# WebSocket client for TerminalWON hub connection
+websockets>=12.0
+
+# Image processing
+Pillow>=10.0.0
+
+# Additional utilities
+asyncio-atexit>=1.0.1
+python-dotenv>=1.0.0
